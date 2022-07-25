@@ -6,17 +6,24 @@ const int segE = 4;
 const int segF = 5;
 const int segG = 6;
 
-const int bot1pin = 9;
-const int bot2pin = 10;
-const int bot3pin = 11;
+const int bot0pin = 9;
+const int bot1pin = 10;
+const int bot2pin = 11;
+const int ledPin = 13;
 
-unsigned long ultimaPiscada = 0; // Armazena quando o led piscou pela última vez
-unsigned long intervalo = 1000;  // Intervalo para piscar o led em ms
+unsigned long ultimaPiscada = 0;   // Armazena quando o led piscou pela última vez
+unsigned long intervalo = 1000000; // Intervalo para piscar o led em us
 
 int led = LOW; // Estado atual do led
 
+int botoesPosicao[] = {9, 10, 11};  // Array que possui o número dos pinos
+unsigned long time[] = {0, 0, 0};   // Array que salva o tempo da última medição dos botões
+int count[] = {0, 0, 0};            // Array que armazena a contagem de cada led
+int entradasDebounce[] = {0, 0, 0}; // Array com as entradas aplicadas com debounce
+int valorTemporario[] = {0, 0, 0};  // Array com os estados atuais das entradas
+
 void setup() {
-  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(ledPin, OUTPUT);
 
   // Define os segmentos do display como saida
   pinMode(segA, OUTPUT);
@@ -28,11 +35,12 @@ void setup() {
   pinMode(segG, OUTPUT);
 
   // Define os botões como entrada
+  pinMode(bot0pin, INPUT);
   pinMode(bot1pin, INPUT);
   pinMode(bot2pin, INPUT);
-  pinMode(bot3pin, INPUT);
 }
 
+// Seta os pinos do display pra formar os números
 void setDigito(char numero) {
   switch (numero) {
   case 1:
@@ -67,38 +75,66 @@ void setDigito(char numero) {
   }
 }
 
+int debounce(int pino) { // Função que recebe o índice do botão para calcular o debounce
+  unsigned long tempoAtual = micros();
+  unsigned long *ultimaVerificacao = &time[pino];    // Última vez que a entrada foi lida
+  int valorAtual = digitalRead(botoesPosicao[pino]); // Valor atual da entrada
+  int *valorTemp = &valorTemporario[pino];           // Valor intermediário (que precisa contar até 7 para se tornar o valor definitivo)
+  int *contagem = &count[pino];                      // Contagem do respectivo pino
+
+  // Caso já tenha passado mais de 1000 us (1 ms)
+  if (tempoAtual - *ultimaVerificacao >= 1000) {
+    // Atualiza a última vez q entrou
+    *ultimaVerificacao = tempoAtual;
+
+    // Caso o valor atual seja igual ao valor temporário aumenta a contagem. Caso contrário, zera
+    if (valorAtual == *valorTemp) *contagem = *contagem + 1;
+    else
+      *contagem = 0;
+
+    // Quando a contagem atinge o limite zera e atualiza o valor da saída.
+    if (*contagem >= 7) {
+      *contagem = 0;
+      entradasDebounce[pino] = valorAtual; // Atualiza a entrada definitiva
+    }
+    *valorTemp = valorAtual;
+  }
+  return entradasDebounce[pino];
+}
+
 void loop() {
-  int bot1 = digitalRead(bot1pin);
-  int bot2 = digitalRead(bot2pin);
-  int bot3 = digitalRead(bot3pin);
+  int bot0 = debounce(0);
+  int bot1 = debounce(1);
+  int bot2 = debounce(2);
 
-  unsigned long tempoAtual = millis();
+  unsigned long tempoAtual = micros();
 
-  if (bot1) {
+  if (bot0) {
     setDigito(1);
-    intervalo = 5;
+    intervalo = 5000;
+  }
+  if (bot1) {
+    setDigito(2);
+    intervalo = 2500;
   }
   if (bot2) {
-    setDigito(2);
-    intervalo = 2;
-  }
-  if (bot3) {
     setDigito(3);
-    intervalo = 1;
+    intervalo = 1667;
   }
 
+  // Caso já tenha passado tempo suficiente desde a última piscada
   if (tempoAtual - ultimaPiscada >= intervalo) {
-    // save the last time you blinked the LED
+    // Salva a última vez q piscou
     ultimaPiscada = tempoAtual;
 
-    // if the LED is off turn it on and vice-versa:
+    // Inverte o estado do led
     if (led == LOW) {
       led = HIGH;
     } else {
       led = LOW;
     }
 
-    // set the LED with the led of the variable:
-    digitalWrite(LED_BUILTIN, led);
+    // atualiza a saída do led
+    digitalWrite(ledPin, led);
   }
 }
