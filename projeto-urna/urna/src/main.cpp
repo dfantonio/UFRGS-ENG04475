@@ -1,6 +1,7 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
+#include "dados.h"
 #include <setup.h>
 
 int main(void) {
@@ -9,9 +10,15 @@ int main(void) {
 
   setup();
 
+  struct Urna urna = {foo, 0};
+
+  while (urna.next)
+    urna.next(&urna);
+
   do {
     while ((UCSR0A & (1 << 7)) == 0)
-      ;                   // Aguarda um caractere ser pressionado (Bit 7 do registrador UCSR0A (Recieve Complete))
+      ; // Aguarda um caractere ser pressionado (Bit 7 do registrador UCSR0A
+        // (Recieve Complete))
     valor = UDR0;         // valor recebe a tecla precionada
     UDR0 = valor;         // Transmite A pela serial
   } while (valor != '1'); // Fica no laÃ§o atÃ© receber o caractere 1
