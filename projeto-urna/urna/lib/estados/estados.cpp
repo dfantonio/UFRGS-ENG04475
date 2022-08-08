@@ -54,5 +54,5 @@ void menu(struct Urna *urna) {
     mandaStringSerial("\nTeste");
   }
 
-  urna->proximo = 0;
+  urna->proximo = menu;
 }
