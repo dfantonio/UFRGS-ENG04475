@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdio.h>
 #include <string.h>
 
 void mandaStringSerial(char frase[]) {
@@ -13,7 +14,8 @@ void mandaStringSerial(char frase[]) {
 }
 
 char *leSerial(int tamanho) {
-  char *texto;
+  char texto[50], *ptn;
+  ptn = texto;
 
   for (int i = 0; i < tamanho; i++) {
     while ((UCSR0A & (1 << 7)) == 0)
@@ -21,5 +23,14 @@ char *leSerial(int tamanho) {
     texto[i] = UDR0;
   }
 
-  return texto;
+  return ptn;
+}
+
+char *convInt2Char(int valor) {
+  char str[5], *ptn;
+  ptn = str;
+
+  sprintf(str, "%d", valor);
+
+  return ptn;
 }
