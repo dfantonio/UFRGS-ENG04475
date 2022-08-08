@@ -9,7 +9,7 @@
 void comandoLCD(unsigned char comando) {
   PORTB = comando;
   PORTC &= ~(1 << RS); // RS
-  PORTC &= ~(1 << RW); // Write
+  PORTC &= ~(1 << RW); // Read/Write
   PORTC |= (1 << EN);  // Dá um pulso
   delayUs(1);
   PORTC &= ~(1 << EN);
@@ -56,7 +56,6 @@ void setupDisplay() {
 }
 
 void display(char texto[], int linha = 0) {
-  // Faz os paranaue pra renderizar o texto no display LCD.
   if (linha == 0) {
     limpaLCD(); // Limpa display
     stringLCD(texto);
