@@ -1,3 +1,4 @@
+#include "lcd.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
@@ -12,4 +13,6 @@ void setup() {
   TCCR1B = (1 << 2); // Inicia o timer1 com prescaler de 256
 
   TCNT1 = 3036;
+
+  setupDisplay();
 }
