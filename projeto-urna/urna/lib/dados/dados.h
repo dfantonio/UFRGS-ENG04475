@@ -4,5 +4,5 @@ typedef void state_fn(struct Urna *);
 
 struct Urna {
   state_fn *proximo;
-  int i;
+  long tempo;
 };

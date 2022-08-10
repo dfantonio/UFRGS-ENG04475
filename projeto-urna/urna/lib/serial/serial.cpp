@@ -13,24 +13,18 @@ void mandaStringSerial(char frase[]) {
   }
 }
 
-char *leSerial(int tamanho) {
-  char texto[50], *ptn;
-  ptn = texto;
-
+char *leSerial(char *str, int tamanho) {
   for (int i = 0; i < tamanho; i++) {
     while ((UCSR0A & (1 << 7)) == 0)
       ;
-    texto[i] = UDR0;
+    str[i] = UDR0;
   }
-
-  return ptn;
 }
 
-char *convInt2Char(int valor) {
-  char str[5], *ptn;
-  ptn = str;
-
+void convInt2Char(char *str, int valor) {
   sprintf(str, "%d", valor);
+}
 
-  return ptn;
+void convLong2Char(char *str, long valor) {
+  sprintf(str, "%ld", valor);
 }
