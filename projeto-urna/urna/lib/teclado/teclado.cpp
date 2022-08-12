@@ -1,7 +1,33 @@
 #include "serial.h"
+#include <avr/io.h>
 
-// Dicas sobre como retornar uma string em C
-// https://flaviocopes.com/c-return-string/
+#define N_LINHAS  4
+#define N_COLUNAS 3
+
+void setupTeclado() {
+  DDRD |= (1 << DD0) + (1 << DD1) + (1 << DD2) + (1 << DD3);
+}
+
+char lePinos() {
+  // for (int linha = 0; linha < N_LINHAS; linha++) {
+  //   PORTD = (1 << linha);
+  //   for (int coluna = 0; coluna < N_COLUNAS; coluna++) {
+  //     if (PIND & (1 << (coluna + 4))) {
+  //       mandaStringSerial("\napertei");
+  //       char str[2];
+  //       convInt2Char(str, linha);
+  //       mandaStringSerial(str);
+  //       convInt2Char(str, coluna);
+  //       mandaStringSerial(str);
+  //     };
+  //   }
+  // }
+  // PORTD = (1 << 3);
+  PORTD = 0;
+  if (PIND & (1 << (0 + 4))) {
+    mandaStringSerial("\napertei");
+  }
+}
 
 // TODO: Remover o argumento do char
 char *LeTeclado(char *str, int tamanho, bool senha) {

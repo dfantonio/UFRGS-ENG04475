@@ -20,6 +20,9 @@ void autentica(struct Urna *urna) {
   int status;
   mandaStringSerial("\nNo aguardo do mesário autenticar");
 
+  while (1)
+    lePinos();
+
   // Lê o código
   do {
     display("Insira o codigo:");
