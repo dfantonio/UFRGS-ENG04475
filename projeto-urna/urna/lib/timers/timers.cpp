@@ -1,4 +1,5 @@
 #include <avr/io.h>
+#include <stdio.h>
 
 void delayUs(int us) {
   if (256 - us * 2 > 0) {
@@ -28,4 +29,13 @@ void delayMs(int ms) {
     ; // Aguarda flag de estouro
 
   TIFR0 = 1; // Limpa flag
+}
+
+void formataTempo(char *str, long tempo) {
+  int horas, minutos;
+
+  horas = tempo / 3600;
+  minutos = (tempo % 3600) / 60;
+
+  sprintf(str, "%02d:%02d", horas, minutos);
 }

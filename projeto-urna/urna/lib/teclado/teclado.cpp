@@ -3,7 +3,8 @@
 // Dicas sobre como retornar uma string em C
 // https://flaviocopes.com/c-return-string/
 
-char *LeTeclado(int tamanho, bool senha) {
+// TODO: Remover o argumento do char
+char *LeTeclado(char *str, int tamanho, bool senha) {
   // Dansk vai codar a lógica pra ler o teclado
 
   // As variáveis são o seguinte:
@@ -19,7 +20,7 @@ char *LeTeclado(int tamanho, bool senha) {
   // caracter a menos. (um zero a esquerda não é nada num inteiro)
 
   // To mockando o retorno enquanto não temos nada
-  return leSerial(tamanho);
+  return leSerial(str, tamanho);
 }
 
 // Função que trava o código até o usuário pressionar qualquer tecla
