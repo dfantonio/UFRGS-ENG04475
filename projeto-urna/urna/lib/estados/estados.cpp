@@ -20,8 +20,30 @@ void autentica(struct Urna *urna) {
   int status;
   mandaStringSerial("\nNo aguardo do mesário autenticar");
 
-  while (1)
-    lePinos();
+  while (1) {
+    char teste[12];
+    LeTeclado(teste, 2, false);
+
+    for (int i = 0; i < 25; i++) {
+      delayMs(10);
+    }
+
+    mandaStringSerial("TO AQUI");
+    mandaStringSerial(teste);
+
+    // mandaStringSerial("\nDebuggando\n");
+    // for (int i = 0; i < 12; i++) {
+    //   convInt2Char(TEMP2, i);
+    //   mandaStringSerial(TEMP2);
+    //   mandaStringSerial(" - ");
+    //   convInt2Char(TEMP2, teste[i]);
+    //   mandaStringSerial(TEMP2);
+    //   mandaStringSerial("\n");
+    // }
+
+    // if (resultado)
+    //   mandaStringSerial("\napertei");
+  }
 
   // Lê o código
   do {

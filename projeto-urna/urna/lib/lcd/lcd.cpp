@@ -41,6 +41,7 @@ void limpaLCD() {
   comandoLCD(0x80); // Cursor no início do LCD
 }
 
+// TODO: Arrumar o registrador C pra só definir os pinos utilizados como saída
 void setupDisplay() {
   // Configura todas as coisas necessárias pro display
   DDRC = 0xFF; // Porta C é saída
