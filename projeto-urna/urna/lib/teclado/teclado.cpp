@@ -7,8 +7,6 @@
 #define N_COLUNAS 3
 #define TAM_TOTAL N_LINHAS *N_COLUNAS
 
-// TODO: Trocar todas as variáveis de um laço for pra um define com 12 ou 13
-
 // Linhas: PC3, PC4 e PC5
 // Colunas: PD4, PD5, PD6 e PD7
 void setupTeclado() {
@@ -34,9 +32,8 @@ int normalizaPino(int linha, int coluna) {
 }
 
 // Varre todo o teclado
-void leMatriz(int valores[]) {
+void leMatriz(bool valores[]) {
   for (int coluna = 0; coluna < N_COLUNAS; coluna++) {
-
     PORTC &= ~((1 << DD3) | (1 << DD4) | (1 << DD5));
     PORTC |= (1 << (coluna + 3));
 
@@ -46,13 +43,13 @@ void leMatriz(int valores[]) {
 
       int indice = normalizaPino(linha, coluna);
 
-      valores[indice] = pino ? 1 : 0;
+      valores[indice] = pino ? true : false;
     }
   }
 }
 
-bool botaoFoiPressionado(int arr1[]) {
-  for (int i = 0; i < 12; i++) {
+bool botaoFoiPressionado(bool arr1[]) {
+  for (int i = 0; i < TAM_TOTAL; i++) {
     if (arr1[i]) return true;
     /* code */
   }
@@ -60,30 +57,30 @@ bool botaoFoiPressionado(int arr1[]) {
 }
 
 // Retorna true se igual e false se diferente
-bool comparaArrays(int arr1[], int arr2[]) {
-  for (int i = 0; i < 12; i++) {
+bool comparaArrays(bool arr1[], bool arr2[]) {
+  for (int i = 0; i < TAM_TOTAL; i++) {
     if (arr1[i] != arr2[i]) return false;
   }
   return true;
 }
 
 // Copia o array de leitura
-void copiaArrayInt(int arr1[], int arr2[]) {
-  for (int i = 0; i < 12; i++) {
+void copiaArrayInt(bool arr1[], bool arr2[]) {
+  for (int i = 0; i < TAM_TOTAL; i++) {
     arr1[i] = arr2[i];
   }
 }
 
 // Encontra o índice do botão pressionado e retorna como um char
-char index2Char(int arr1[]) {
-  for (int i = 0; i < 12; i++) {
+char index2Char(bool arr1[]) {
+  for (int i = 0; i < TAM_TOTAL; i++) {
     if (arr1[i]) return i + '0'; // O 0 é utilizado pra chegar nos números da tabela ASCII
   }
 }
 
 char debounce() {
-  int referencia[20] = {0};
-  int novaLeitura[20] = {0}; // TODO: Trocar tamanho
+  bool referencia[TAM_TOTAL] = {0};
+  bool novaLeitura[TAM_TOTAL] = {0};
 
   int count = 0;
   bool resultadoComp;
