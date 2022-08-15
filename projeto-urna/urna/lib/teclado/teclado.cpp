@@ -7,8 +7,8 @@
 #define N_COLUNAS 3
 #define TAM_TOTAL N_LINHAS *N_COLUNAS
 
-// Linhas: PC3, PC4 e PC5
-// Colunas: PD4, PD5, PD6 e PD7
+// Colunas: PC3, PC4 e PC5
+// Linhas: PD4, PD5, PD6 e PD7
 void setupTeclado() {
   DDRC |= (1 << DD3) | (1 << DD4) | (1 << DD5);
   DDRD &= (1 << DD4) | (1 << DD5) | (1 << DD6) | (1 << DD7);
