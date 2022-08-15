@@ -44,6 +44,7 @@ void limpaLCD() {
 // TODO: Arrumar o registrador C pra só definir os pinos utilizados como saída
 void setupDisplay() {
   // Configura todas as coisas necessárias pro display
+  // TODO: Definir somente os pinos utilizados como saída
   DDRC = 0xFF; // Porta C é saída
   DDRB = 0xFF; // Porta B é saída
   delayMs(10);
@@ -56,6 +57,7 @@ void setupDisplay() {
   comandoLCD(0x80); // Cursor no início do LCD
 }
 
+// TODO: Verona tem que fazer uma forma de limpar uma linha só, para quando o usuário apagar algum dígito
 void display(char texto[], int linha = 0) {
   if (linha == 0) {
     limpaLCD(); // Limpa display
