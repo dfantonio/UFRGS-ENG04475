@@ -1,4 +1,5 @@
 #include "lcd.h"
+#include "teclado.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
@@ -12,7 +13,8 @@ void setup() {
   TCCR1A = 0;        // Operação normal do timer1
   TCCR1B = (1 << 2); // Inicia o timer1 com prescaler de 256
 
-  TCNT1 = 3036;
+  TCNT1 = 3036; // Define o tempo da 1ª contagem do timer
 
   setupDisplay();
+  setupTeclado();
 }

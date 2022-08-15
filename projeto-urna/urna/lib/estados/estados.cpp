@@ -19,11 +19,12 @@ char TEMP2[2];
 void autentica(struct Urna *urna) {
   int status;
   mandaStringSerial("\nNo aguardo do mesário autenticar");
+  display("Insira o codigo:");
 
   // Lê o código
   do {
     display("Insira o codigo:");
-    LeTeclado(TEMP5, 5, false);
+    leTeclado(TEMP5, 5, false);
 
     status = strcmp(TEMP5, CODIGO_MESARIO) != 0;
     if (status) {
@@ -35,14 +36,11 @@ void autentica(struct Urna *urna) {
   // Lê a senha
   do {
     display("Insira a senha:");
-    char str[6];
-    convInt2Char(str, urna->tempo);
-    mandaStringSerial(str);
-    LeTeclado(TEMP5, 5, true);
+    leTeclado(TEMP5, 5, true);
 
     status = strcmp(TEMP5, SENHA_MESARIO) != 0;
     if (status) {
-      mandaStringSerial("SENHA INVALIDA");
+      display("SENHA INVALIDA");
       aguardaTecla();
     }
   } while (status);
@@ -80,26 +78,23 @@ void exibeHora(struct Urna *urna) {
   formataTempo(horario, urna->tempo);
   display(horario, 1);
 
-  LeTeclado(TEMP2, 1, false);
+  leTeclado(TEMP2, 1, false);
 
   urna->proximo = menu;
 }
 
-// TODO: Implementar proteção pro usuário não colocar um horário dps das 23 hrs
+// TODO: Implementar proteção pro usuário não colocar um horário dps das 23 hrs e dos minutos
 // e minutos dps do 59
 void defineHora(struct Urna *urna) {
   TEMP2[2] = 0;
   long hora, minuto;
   display("Digite a hora:");
-  LeTeclado(TEMP2, 2, false);
+  leTeclado(TEMP2, 2, false);
   hora = atoi(TEMP2);
 
   display("Digite os min:");
-  LeTeclado(TEMP2, 2, false);
+  leTeclado(TEMP2, 2, false);
   minuto = atoi(TEMP2);
-
-  long teste = hora * 3600 + minuto * 60;
-  convLong2Char(TEMP2, teste);
 
   urna->tempo = hora * 3600 + minuto * 60;
   urna->proximo = menu;
