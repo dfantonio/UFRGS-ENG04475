@@ -6,5 +6,3 @@ void aguardaTecla();
 
 // Configura todos os pinos necessários para o teclado
 void setupTeclado();
-
-void lePinos(int *valores);
