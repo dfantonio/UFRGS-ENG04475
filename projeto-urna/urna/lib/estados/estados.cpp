@@ -12,6 +12,7 @@ void autentica(struct Urna *urna);
 void menu(struct Urna *urna);
 void exibeHora(struct Urna *urna);
 void defineHora(struct Urna *urna);
+void trocaEstadoUrna(struct Urna *urna);
 
 char TEMP5[5];
 char TEMP2[2];
@@ -23,11 +24,13 @@ void autentica(struct Urna *urna) {
 
   // Lê o código
   do {
+    limpaLCD();
     display("Insira o codigo:");
     leTeclado(TEMP5, 5, false);
 
     status = strcmp(TEMP5, CODIGO_MESARIO) != 0;
     if (status) {
+      limpaLCD();
       display("CODIGO INVALIDO");
       aguardaTecla();
     }
@@ -35,11 +38,13 @@ void autentica(struct Urna *urna) {
 
   // Lê a senha
   do {
+    limpaLCD();
     display("Insira a senha:");
     leTeclado(TEMP5, 5, true);
 
     status = strcmp(TEMP5, SENHA_MESARIO) != 0;
     if (status) {
+      limpaLCD();
       display("SENHA INVALIDA");
       aguardaTecla();
     }
@@ -49,6 +54,7 @@ void autentica(struct Urna *urna) {
 };
 
 void menu(struct Urna *urna) {
+  limpaLCD();
   display("menu principal");
 
   while ((UCSR0A & (1 << 7)) == 0)
@@ -66,6 +72,10 @@ void menu(struct Urna *urna) {
     urna->proximo = defineHora;
     break;
 
+  case 'a':
+    urna->proximo = trocaEstadoUrna;
+    break;
+
   default:
     urna->proximo = menu;
     break;
@@ -74,6 +84,7 @@ void menu(struct Urna *urna) {
 
 void exibeHora(struct Urna *urna) {
   char horario[6];
+  limpaLCD();
   display("Hora atual:");
   formataTempo(horario, urna->tempo);
   display(horario, 1);
@@ -83,19 +94,50 @@ void exibeHora(struct Urna *urna) {
   urna->proximo = menu;
 }
 
-// TODO: Implementar proteção pro usuário não colocar um horário dps das 23 hrs e dos minutos
-// e minutos dps do 59
 void defineHora(struct Urna *urna) {
   TEMP2[2] = 0;
   long hora, minuto;
-  display("Digite a hora:");
-  leTeclado(TEMP2, 2, false);
-  hora = atoi(TEMP2);
 
-  display("Digite os min:");
-  leTeclado(TEMP2, 2, false);
-  minuto = atoi(TEMP2);
+  // Proteção para que o horário seja válido
+  do {
+    limpaLCD();
+    display("Digite a hora:");
+    leTeclado(TEMP2, 2, false);
+    hora = atoi(TEMP2);
+
+    limpaLCD();
+    display("Digite os min:");
+    leTeclado(TEMP2, 2, false);
+    minuto = atoi(TEMP2);
+  } while (hora > 23 || minuto > 59);
 
   urna->tempo = hora * 3600 + minuto * 60;
   urna->proximo = menu;
+}
+
+void trocaEstadoUrna(struct Urna *urna) {
+  char TEMP[1];
+  int estado = 0;
+  char linha1[] = "0 - operacional";
+  char linha2[] = "1 - bloqueado";
+
+  // Proteção para que o estado seja válido
+  limpaLCD();
+  display(linha1, 0);
+  display(linha2, 1);
+
+  do {
+    leTeclado(TEMP, 1, false);
+    estado = atoi(TEMP);
+  } while (!(estado == 0 || estado == 1));
+
+  switch (estado) {
+  case 0:
+    urna->proximo = menu;
+    break;
+
+  case 1:
+    urna->proximo = autentica;
+    break;
+  }
 }

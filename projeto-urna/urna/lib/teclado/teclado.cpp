@@ -7,8 +7,8 @@
 #define N_COLUNAS 3
 #define TAM_TOTAL N_LINHAS *N_COLUNAS
 
-// Linhas: PC3, PC4 e PC5
-// Colunas: PD4, PD5, PD6 e PD7
+// Colunas: PC3, PC4 e PC5
+// Linhas: PD4, PD5, PD6 e PD7
 void setupTeclado() {
   DDRC |= (1 << DD3) | (1 << DD4) | (1 << DD5);
   DDRD &= (1 << DD4) | (1 << DD5) | (1 << DD6) | (1 << DD7);
@@ -107,16 +107,29 @@ void criaAsteriscos(char *str, int tamanho) {
   for (int i = 0; i < tamanho; i++) {
     str[i] = '*';
   }
+  str[tamanho] = 0;
+}
+
+void limpaStr(char *str, int tamanho) {
+  for (int i = 0; i < tamanho; i++) {
+    str[i] = 0;
+  }
 }
 
 void leTeclado(char *str, int tamanho, bool senha) {
   char asteriscos[tamanho + 1] = {0};
   char letra;
 
+  limpaStr(str, tamanho);
+
   for (int i = 0; i < tamanho; i++) {
     letra = debounce();
-    if (letra == ';' && i > 0) i -= 2; // Caso seja o #, atua como backspace e apaga um caracter
-    else
+    if (letra == ';') { // Caso seja o #, atua como backspace e apaga um caracter
+      if (i > 0) {
+        str[i - 1] = 0;
+        i -= 2;
+      }
+    } else
       str[i] = letra;
 
     if (senha) {
