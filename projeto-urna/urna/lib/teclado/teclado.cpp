@@ -107,16 +107,29 @@ void criaAsteriscos(char *str, int tamanho) {
   for (int i = 0; i < tamanho; i++) {
     str[i] = '*';
   }
+  str[tamanho] = 0;
+}
+
+void limpaStr(char *str, int tamanho) {
+  for (int i = 0; i < tamanho; i++) {
+    str[i] = 0;
+  }
 }
 
 void leTeclado(char *str, int tamanho, bool senha) {
   char asteriscos[tamanho + 1] = {0};
   char letra;
 
+  limpaStr(str, tamanho);
+
   for (int i = 0; i < tamanho; i++) {
     letra = debounce();
-    if (letra == ';' && i > 0) i -= 2; // Caso seja o #, atua como backspace e apaga um caracter
-    else
+    if (letra == ';') { // Caso seja o #, atua como backspace e apaga um caracter
+      if (i > 0) {
+        str[i - 1] = 0;
+        i -= 2;
+      }
+    } else
       str[i] = letra;
 
     if (senha) {
