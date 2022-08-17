@@ -1,5 +1,6 @@
 #include "dados.h"
 #include "lcd.h"
+#include "navegaMenu.h"
 #include "serial.h"
 #include "setup.h"
 #include "teclado.h"
@@ -13,6 +14,9 @@ void menu(struct Urna *urna);
 void exibeHora(struct Urna *urna);
 void defineHora(struct Urna *urna);
 void trocaEstadoUrna(struct Urna *urna);
+void auditoria(struct Urna *urna);
+void validaEleitor(struct Urna *urna);
+void geraRelatorio(struct Urna *urna);
 
 char TEMP5[5];
 char TEMP2[2];
@@ -55,31 +59,9 @@ void autentica(struct Urna *urna) {
 
 void menu(struct Urna *urna) {
   limpaLCD();
-  display("menu principal");
+  display("menu principal:");
 
-  while ((UCSR0A & (1 << 7)) == 0)
-    ;                // Aguarda um caractere ser pressionado (Bit 7 do registrador UCSR0A
-                     // (Receive Complete))
-  char valor = UDR0; // valor recebe a tecla precionada
-  UDR0 = valor;      // Devolve a letra digitada
-
-  switch (valor) {
-  case 't':
-    urna->proximo = exibeHora;
-    break;
-
-  case 's':
-    urna->proximo = defineHora;
-    break;
-
-  case 'a':
-    urna->proximo = trocaEstadoUrna;
-    break;
-
-  default:
-    urna->proximo = menu;
-    break;
-  }
+  urna->proximo = navegaMenu;
 }
 
 void exibeHora(struct Urna *urna) {
@@ -140,4 +122,19 @@ void trocaEstadoUrna(struct Urna *urna) {
     urna->proximo = autentica;
     break;
   }
+}
+
+void geraRelatorio(struct Urna *urna) {
+  limpaLCD();
+  display("relatorio", 1);
+}
+
+void validaEleitor(struct Urna *urna) {
+  limpaLCD();
+  display("eleitor:", 1);
+}
+
+void auditoria(struct Urna *urna) {
+  limpaLCD;
+  display("auditoria", 1);
 }
