@@ -1,3 +1,5 @@
+#include "SMA.h"
+#include "comunicaModulo.h"
 #include "dados.h"
 #include "lcd.h"
 #include "navegaMenu.h"
@@ -23,7 +25,6 @@ char TEMP2[2];
 
 void autentica(struct Urna *urna) {
   int status;
-  mandaStringSerial("\nNo aguardo do mesário autenticar");
   display("Insira o codigo:");
 
   // Lê o código
@@ -130,11 +131,32 @@ void geraRelatorio(struct Urna *urna) {
 }
 
 void validaEleitor(struct Urna *urna) {
-  limpaLCD();
-  display("eleitor:", 1);
+  char eleitor[] = "00000";
+  char bla[] = "bla";
+  char resposta[16];
+  char nome[16];
+  int status = 0;
+  char n[] = "5";
+
+  do {
+    limpaLCD();
+    display("Eleitor:");
+    leTeclado(eleitor, 5, false);
+    enviaStringModulo("UN", n, eleitor);
+    recebeSerialModulo(resposta);
+    status = strcmp(resposta, "Codigo invalido") == 0;
+    if (status) {
+      limpaLCD();
+      display("Codigo invalido");
+      aguardaTecla();
+    }
+  } while (status);
+
+  display("Sucesso");
+  aguardaTecla();
 }
 
 void auditoria(struct Urna *urna) {
-  limpaLCD;
+  limpaLCD();
   display("auditoria", 1);
 }
