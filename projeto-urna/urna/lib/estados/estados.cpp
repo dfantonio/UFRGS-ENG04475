@@ -1,4 +1,3 @@
-#include "SMA.h"
 #include "comunicaModulo.h"
 #include "dados.h"
 #include "lcd.h"
