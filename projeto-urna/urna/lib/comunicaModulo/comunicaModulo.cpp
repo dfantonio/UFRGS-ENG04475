@@ -5,11 +5,8 @@
 #include <string.h>
 
 void enviaStringModulo(char primeiro[], char n[], char codigo[]) {
-
   mandaStringSerial(primeiro);
-
   mandaStringSerial(n);
-
   mandaStringSerial(codigo);
 }
 
@@ -28,14 +25,13 @@ void recebeSerialModulo(char *str) { // Recebe string
 long recebeHora() { // Recebe hora
   char str[2];
   long segundos = 0;
-  int minuto, hora;
+  char minuto[2], hora[2];
 
   leSerial(str, 2);
-
   leCharSerial(hora);
   leCharSerial(minuto);
 
-  segundos = hora * 3600 + minuto * 60;
+  segundos = atoi(hora) * 3600 + atoi(minuto) * 60;
 
   return segundos;
 }

@@ -131,9 +131,7 @@ void geraRelatorio(struct Urna *urna) {
 
 void validaEleitor(struct Urna *urna) {
   char eleitor[] = "00000";
-  char bla[] = "bla";
   char resposta[16];
-  char nome[16];
   int status = 0;
   char n[] = "5";
 
