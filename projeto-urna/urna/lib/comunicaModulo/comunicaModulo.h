@@ -3,7 +3,7 @@ void enviaStringModulo(char primeiro[], char n[], char codigo[]);
 // Verificação do sistema
 void verifica(int hora, int min, int votos);
 // Recebe a resposta do modulo
-void *recebeSerialModulo(char *str);
+void recebeSerialModulo(char *str);
 // Recebe a hora do modulo
 long recebeHora();
 // Verifica a urna
