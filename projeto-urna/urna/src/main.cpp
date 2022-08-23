@@ -1,10 +1,11 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
+#include "comunicaModulo.h"
 #include "dados.h"
 #include "estados.h"
 #include "serial.h"
-#include <setup.h>
+#include "setup.h"
 
 long *relogio;
 
@@ -19,6 +20,7 @@ int main(void) {
   setup();
 
   struct Urna urna = {autentica, 0};
+  urna.tempo = recebeHora();
   relogio = &urna.tempo;
 
   while (urna.proximo)
