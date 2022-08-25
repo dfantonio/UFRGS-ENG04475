@@ -17,9 +17,10 @@ ISR(TIMER1_OVF_vect) {
 };
 
 int main(void) {
-  setup();
-
   struct Urna urna = {autentica, 0};
+  urna.candidatos[0][0].votos = 20;
+  setup(urna.candidatos);
+  mandaCharSerial(urna.candidatos[0][0].votos);
   urna.tempo = recebeHora();
   relogio = &urna.tempo;
 

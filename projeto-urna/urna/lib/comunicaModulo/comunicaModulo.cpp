@@ -35,3 +35,26 @@ long recebeHora() { // Recebe hora
 
   return segundos;
 }
+
+void desembaralha(char embaralhado[], char *eleitor, char *candidato, char *partido) {
+  int i = 0, j = 0, k = 0;
+  char aux[20] = {0};
+  // Separa as palavras
+  for (j = 0; j < 3; j++) {
+    k = 0;
+    do {
+      aux[k] = embaralhado[i];
+      i++;
+      k++;
+    } while (embaralhado[i - 1] == NULL);
+
+    // Decriptografa aux
+
+    // Caso seja partido, começa com "P"
+    if (aux[0] == 80)
+      strcpy(partido, aux);
+    // Caso seja nome do candidato, não é partido, nem o nome do eleitor
+    else if (strcmp(eleitor, aux) != 0)
+      strcpy(candidato, aux);
+  }
+}

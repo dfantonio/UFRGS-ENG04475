@@ -8,3 +8,5 @@ void recebeSerialModulo(char *str);
 long recebeHora();
 // Verifica a urna
 void verifica(int hora, int min, int votos);
+// Desembaralha strings
+void desembaralha(char embaralhado[], char *eleitor, char *candidato, char *partido);
