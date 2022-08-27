@@ -8,3 +8,4 @@ void trocaEstadoUrna(struct Urna *urna);
 void auditoria(struct Urna *urna);
 void validaEleitor(struct Urna *urna);
 void geraRelatorio(struct Urna *urna);
+void exibeEstado(struct Urna *urna);

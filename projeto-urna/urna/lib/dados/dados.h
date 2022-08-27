@@ -1,6 +1,13 @@
 // Arquivo que contém todas as estruturas de dados necessárias
 
-typedef void state_fn(struct Urna *);
+typedef void funcaoDoEstado(struct Urna *);
+
+enum Estados {
+  operacional,
+  bloqueado,
+  aguardando,
+  encerrado
+};
 
 struct Eleitor {
   char nome[20];
@@ -9,7 +16,8 @@ struct Eleitor {
 };
 
 struct Urna {
-  state_fn *proximo;
+  funcaoDoEstado *proximo;
+  enum Estados estado;
   long tempo;
   struct Eleitor eleitor;
 };

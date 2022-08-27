@@ -22,6 +22,8 @@ void geraRelatorio(struct Urna *urna);
 char TEMP5[5];
 char TEMP2[2];
 
+// TODO: Só é possível votar caso o estado da urna seja operacional
+
 void autentica(struct Urna *urna) {
   int status;
   display("Insira o codigo:");
@@ -79,6 +81,14 @@ void exibeHora(struct Urna *urna) {
 void defineHora(struct Urna *urna) {
   TEMP2[2] = 0;
   long hora, minuto;
+  urna->proximo = menu;
+
+  if (urna->estado == encerrado) {
+    limpaLCD();
+    display("Nao pode alterar");
+    aguardaTecla();
+    return;
+  }
 
   // Proteção para que o horário seja válido
   do {
@@ -86,42 +96,78 @@ void defineHora(struct Urna *urna) {
     display("Digite a hora:");
     leTeclado(TEMP2, 2, false);
     hora = atoi(TEMP2);
+  } while (hora > 23);
 
+  do {
     limpaLCD();
     display("Digite os min:");
     leTeclado(TEMP2, 2, false);
     minuto = atoi(TEMP2);
-  } while (hora > 23 || minuto > 59);
+  } while (minuto > 59);
 
   urna->tempo = hora * 3600 + minuto * 60;
+  verificaHorario(urna);
+}
+
+// Função que retorna uma string com o estado da urna atual
+void populaEstado(char str[], enum Estados estado) {
+  switch (estado) {
+  case operacional:
+    strcpy(str, "operacional");
+    break;
+
+  case bloqueado:
+    strcpy(str, "bloqueado");
+    break;
+
+  case aguardando:
+    strcpy(str, "aguardando");
+    break;
+
+  case encerrado:
+    strcpy(str, "encerrado");
+    break;
+
+  default:
+    strcpy(str, "ERRO");
+    break;
+  }
+}
+
+void exibeEstado(struct Urna *urna) {
+  char estado[12];
+  limpaLCD();
+  display("Estado atual:");
+  populaEstado(estado, urna->estado);
+  display(estado, 1);
+
+  leTeclado(TEMP2, 1, false);
+
   urna->proximo = menu;
 }
 
 void trocaEstadoUrna(struct Urna *urna) {
   char TEMP[1];
-  int estado = 0;
   char linha1[] = "0 - operacional";
   char linha2[] = "1 - bloqueado";
+  urna->proximo = menu;
 
-  // Proteção para que o estado seja válido
-  limpaLCD();
-  display(linha1, 0);
-  display(linha2, 1);
+  if (urna->estado == encerrado || urna->estado == aguardando) {
+    limpaLCD();
+    display("Nao pode alterar");
+    aguardaTecla();
+    return;
+  }
 
   do {
+    limpaLCD();
+    display(linha1, 0);
+    display(linha2, 1);
+
     leTeclado(TEMP, 1, false);
-    estado = atoi(TEMP);
-  } while (!(estado == 0 || estado == 1));
-
-  switch (estado) {
-  case 0:
-    urna->proximo = menu;
-    break;
-
-  case 1:
-    urna->proximo = autentica;
-    break;
-  }
+    if (TEMP[0] == '0') urna->estado = operacional;
+    if (TEMP[0] == '1') urna->estado = bloqueado;
+  } while (!(TEMP[0] == '0' || TEMP[0] == '1'));
 }
 
 void geraRelatorio(struct Urna *urna) {
