@@ -6,8 +6,17 @@
 #define RW PC1 // Define Read/Write
 #define EN PC2 // Define Enable
 
+void setaPinos(unsigned char comando) {
+  unsigned char portb = comando & 0x3f;        // pega os 6 primeiros bits do comando
+  unsigned char portd = (comando & 0xc0) >> 4; // Pega os 2 últimos bits e desloca pros bits 2 e 3
+
+  PORTB = portb;
+  PORTD &= ~(0xc);
+  PORTD |= portd;
+}
+
 void comandoLCD(unsigned char comando) {
-  PORTB = comando;
+  setaPinos(comando);
   PORTC &= ~(1 << RS); // RS
   PORTC &= ~(1 << RW); // Read/Write
   PORTC |= (1 << EN);  // Dá um pulso
@@ -18,7 +27,7 @@ void comandoLCD(unsigned char comando) {
 
 void charLCD(unsigned char char_data) // Recebe os dados da string
 {
-  PORTB = char_data;
+  setaPinos(char_data);
   PORTC |= (1 << RS);
   PORTC &= ~(1 << RW);
   PORTC |= (1 << EN);
@@ -43,8 +52,9 @@ void limpaLCD() {
 
 void setupDisplay() {
   // Configura todas as coisas necessárias pro display
-  DDRC |= ((1 << DD0) | (1 << DD1) | (1 << DD2)); // Porta C é saída
-  DDRB = 0xFF;                                    // Porta B é saída
+  DDRC |= (1 << DD0) | (1 << DD1) | (1 << DD2);                                        // Porta C é saída
+  DDRB |= (1 << DD0) | (1 << DD1) | (1 << DD2) | (1 << DD3) | (1 << DD4) | (1 << DD5); // Porta B é saída
+  DDRD |= (1 << DD2) | (1 << DD3);
   delayMs(10);
   delayMs(10);
 
