@@ -116,7 +116,7 @@ void limpaStr(char *str, int tamanho) {
   }
 }
 
-void leTeclado(char *str, int tamanho, bool senha) {
+void leTeclado(char *str, int tamanho, bool senha = false) {
   char asteriscos[tamanho + 1] = {0};
   char letra;
 
