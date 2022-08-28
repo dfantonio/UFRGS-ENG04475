@@ -42,7 +42,7 @@ void navegaMenu(struct Urna *urna) {
     switch (temp) {
     case '2':
       i--;
-      if (i == -1) i = 5;
+      if (i == -1) i = TAMANHO - 1;
       break;
 
     case '8':
