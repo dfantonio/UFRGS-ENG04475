@@ -1,5 +1,6 @@
 #include "comunicaModulo.h"
 #include "dados.h"
+#include "estados.h"
 #include "lcd.h"
 #include "serial.h"
 #include "teclado.h"
@@ -10,6 +11,7 @@
 #include <string.h>
 
 int *contadorp, *auxp;
+struct Urna *pUrna;
 
 ISR(TIMER2_OVF_vect) {
   *contadorp++;
@@ -24,11 +26,12 @@ ISR(TIMER2_OVF_vect) {
     *auxp++;
   }
 
-  if (*contadorp == 12000) {
+  if (*contadorp == 1200) {
     *contadorp = 0;
     TCCR2B = 0x00; // Para o timer 2
     mandaStringSerial("UT");
-    // TODO: Mandar a urna para o menu novamente
+    // TODO: arrumar issae, ir para menu daqui
+    pUrna->flagTimeoutVotacao = true;
   }
 };
 
@@ -45,13 +48,13 @@ void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char *ca
     recebeSerialModulo(resposta);
     desembaralha(resposta, eleitor, candidato, partido);
 
-    limpaLCD();
-    display(candidato, 0);
-    display("1-SIM   2-NAO");
     do {
+      limpaLCD();
+      display(candidato, 0);
+      display("1-SIM   2-NAO", 1);
       leTeclado(&confirma, 1, 0);
-    } while (confirma != 1 || confirma != 0);
-  } while (confirma == 0);
+    } while (confirma != '1' && confirma != '2');
+  } while (confirma == '2');
 }
 
 void contabilizaVoto(struct Candidato candidatos[3][7], char candidato[], int cargo, char partido[]) {
@@ -66,11 +69,17 @@ void contabilizaVoto(struct Candidato candidatos[3][7], char candidato[], int ca
   candidatos[cargo][i].votos++;
 }
 
-void votacao(struct Candidato candidatos[3][7], char eleitor[]) {
-  int contador = 0, aux = 0, votoP, votoG, votoS, i = 0, cargo = 0;
+void votacao(struct Urna *urna, char eleitor[]) {
+
+  pUrna = urna;
+  int contador = 0, aux = 0;
   char resposta[20] = {0},
-       candidato[20] = {0},
-       partido[14] = {0};
+       candidatoSenador[20] = {0},
+       candidatoGovernador[20] = {0},
+       candidatoPresidente[20] = {0},
+       partidoSenador[14] = {0},
+       partidoGovernador[14] = {0},
+       partidoPresidente[14] = {0};
 
   contadorp = &contador;
 
@@ -84,23 +93,23 @@ void votacao(struct Candidato candidatos[3][7], char eleitor[]) {
   sei();
 
   mandaStringSerial("UI");
-  recebeSerialModulo(resposta);
-
-  // Votação para presidente
-  recebeCandidato("Presidente:", "UP", eleitor, candidato, partido);
-  contabilizaVoto(candidatos, candidato, cargo, partido);
-
-  // Votação para governador
-  cargo++;
-  recebeCandidato("Governador:", "UG", eleitor, candidato, partido);
-  contabilizaVoto(candidatos, candidato, cargo, partido);
-
+  leSerial(resposta, 2);
+  display("vou receber", 1);
+  aguardaTecla();
   // Votação para senador
-  cargo++;
-  recebeCandidato("Senador:", "US", eleitor, candidato, partido);
-  contabilizaVoto(candidatos, candidato, cargo, partido);
+  recebeCandidato("Senador:", "US", eleitor, candidatoSenador, partidoSenador);
+  // Votação para governador
+  recebeCandidato("Governador:", "UG", eleitor, candidatoGovernador, partidoGovernador);
+  // Votação para presidente
+  recebeCandidato("Presidente:", "UP", eleitor, candidatoPresidente, partidoPresidente);
+
+  // Contabilização dos votos
+  contabilizaVoto(urna->candidatos, candidatoSenador, Senador, partidoSenador);
+  contabilizaVoto(urna->candidatos, candidatoGovernador, Governador, partidoGovernador);
+  contabilizaVoto(urna->candidatos, candidatoPresidente, Presidente, partidoPresidente);
 
   mandaStringSerial("UC");
 
-  // TODO: Tocar som e mandar para o menu
+  // TODO: Tocar som
+  urna->proximo = menu;
 }

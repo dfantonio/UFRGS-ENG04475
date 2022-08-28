@@ -3,4 +3,4 @@ void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char *ca
 // Conta os votos e registra os candidatos
 void contabilizaVoto(struct Candidato candidatos[3][7], char candidato[], int cargo, char partido[]);
 // Processo de votação
-void votacao(struct Candidato candidatos[3][7], char eleitor[]);
+void votacao(struct Urna *urna, char eleitor[]);

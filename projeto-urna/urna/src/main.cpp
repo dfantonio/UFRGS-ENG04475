@@ -4,6 +4,7 @@
 #include "comunicaModulo.h"
 #include "dados.h"
 #include "estados.h"
+#include "lcd.h"
 #include "serial.h"
 #include "setup.h"
 
@@ -17,13 +18,20 @@ ISR(TIMER1_OVF_vect) {
 };
 
 int main(void) {
-  struct Urna urna = {autentica, 0};
-  urna.candidatos[0][0].votos = 20;
+  struct Urna urna = {menu, 0};
+
   setup(urna.candidatos);
-  mandaCharSerial(urna.candidatos[0][0].votos);
-  urna.tempo = recebeHora();
+
   relogio = &urna.tempo;
 
-  while (urna.proximo)
+  display("Aguardando...", 1);
+  urna.tempo = recebeHora();
+
+  while (urna.proximo) {
+    if (urna.flagTimeoutVotacao) {
+      urna.flagTimeoutVotacao = false;
+      urna.proximo = menu;
+    }
     urna.proximo(&urna);
+  }
 }

@@ -25,4 +25,5 @@ struct Urna {
   long tempo;
   struct Eleitor eleitor;
   struct Candidato candidatos[3][7]; // Linha: cargos, Coluna: candidatos
+  bool flagTimeoutVotacao;
 };

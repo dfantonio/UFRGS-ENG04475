@@ -40,21 +40,21 @@ void desembaralha(char embaralhado[], char *eleitor, char *candidato, char *part
   int i = 0, j = 0, k = 0;
   char aux[20] = {0};
   // Separa as palavras
-  for (j = 0; j < 3; j++) {
+  for (j = 0; j < 2; j++) {
     k = 0;
     do {
       aux[k] = embaralhado[i];
       i++;
       k++;
-    } while (embaralhado[i - 1] == NULL);
-
+    } while (embaralhado[i - 1] != 0);
+    // TODO: IMPLEMENTAR DO MODO COM CRIPTIPTOGRAFIA
     // Decriptografa aux
-
     // Caso seja partido, começa com "P"
-    if (aux[0] == 80)
+    if (j == 1)
       strcpy(partido, aux);
     // Caso seja nome do candidato, não é partido, nem o nome do eleitor
-    else if (strcmp(eleitor, aux) != 0)
+    // else if (strcmp(eleitor, aux) != 0)
+    else
       strcpy(candidato, aux);
   }
 }

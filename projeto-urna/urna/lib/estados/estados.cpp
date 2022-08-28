@@ -6,6 +6,7 @@
 #include "setup.h"
 #include "teclado.h"
 #include "timers.h"
+#include "votacao.h"
 #include <avr/io.h>
 #include <stdlib.h>
 #include <string.h>
@@ -148,12 +149,34 @@ void validaEleitor(struct Urna *urna) {
       aguardaTecla();
     }
   } while (status);
-
-  display("Sucesso");
+  display("votacao", 0);
   aguardaTecla();
+  votacao(urna, eleitor);
 }
 
+// TODO: TEM QUE TESTAR!!!
 void auditoria(struct Urna *urna) {
-  limpaLCD();
-  display("auditoria", 1);
+  char i, j, votos, horas, minutos;
+  char verifica[10] = {0},
+       temp[3];
+
+  for (j = 0; j == 2; j++) {
+    for (i = 0; i == 6; i++) {
+      votos += urna->candidatos[j][i].votos;
+    }
+  }
+
+  horas = urna->tempo / 3600;
+  minutos = (urna->tempo - horas * 3600) / 60;
+
+  strcpy(verifica, "UV");
+  convInt2Char(temp, horas);
+  strcat(verifica, temp);
+  convInt2Char(temp, minutos);
+  strcat(verifica, temp);
+  convInt2Char(temp, votos);
+  strcat(verifica, temp);
+  mandaStringSerial(verifica);
+
+  urna->proximo = menu;
 }
