@@ -9,74 +9,47 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TAMANHO 7
+
+struct ItemMenu {
+  char titulo[17];
+  funcaoDoEstado *proximo;
+};
+
 void navegaMenu(struct Urna *urna) {
-  int move, i = 0, j = 0;
-  char temp[2];
-  display(">Valida eleitor", 1);
+  struct ItemMenu menu[TAMANHO] = {
+      {">Valida eleitor", validaEleitor},
+      {">Consulta hora", exibeHora},
+      {">Troca hora", defineHora},
+      {">Consulta estado", exibeEstado},
+      {">Troca estado", trocaEstadoUrna},
+      {">Gera relatorio", geraRelatorio},
+      {">Auditoria", auditoria},
+  };
+
+  int i = 0;
+  char temp;
   do {
     do {
-      leTeclado(temp, 1, false);
-      move = atoi(temp);
-    } while (!(move == 2 || move == 8 || move == 5));
+      display(menu[i].titulo, 1);
+      leTeclado(&temp, 1);
+      if (temp == '5') {
+        urna->proximo = menu[i].proximo;
+        return;
+      };
+    } while (!(temp == '2' || temp == '8'));
 
-    switch (move) {
-    case 2:
+    switch (temp) {
+    case '2':
       i--;
       if (i == -1) i = 5;
       break;
 
-    case 8:
+    case '8':
       i++;
-      if (i == 7) i = 0;
-      break;
-
-    case 5:
-      j = 1;
+      if (i == TAMANHO) i = 0;
       break;
     }
 
-    switch (i) {
-    case 0:
-      display(">Valida eleitor", 1);
-      if (j == 1)
-        urna->proximo = validaEleitor;
-      break;
-
-    case 1:
-      display(">Consulta hora", 1);
-      if (j == 1)
-        urna->proximo = exibeHora;
-      break;
-
-    case 2:
-      display(">Troca hora", 1);
-      if (j == 1)
-        urna->proximo = defineHora;
-      break;
-
-    case 3:
-      display(">Consulta estado", 1);
-      if (j == 1)
-        urna->proximo = exibeEstado;
-      break;
-
-    case 4:
-      display(">Troca estado", 1);
-      if (j == 1)
-        urna->proximo = trocaEstadoUrna;
-      break;
-
-    case 5:
-      display(">Gera relatorio", 1);
-      if (j == 1)
-        urna->proximo = geraRelatorio;
-      break;
-
-    case 6:
-      display(">Auditoria", 1);
-      if (j == 1)
-        urna->proximo = auditoria;
-      break;
-    }
-  } while (!(j == 1));
+  } while (1);
 }
