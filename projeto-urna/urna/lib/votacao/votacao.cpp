@@ -11,7 +11,7 @@
 #include <string.h>
 
 int *contadorp, *auxp;
-struct Urna *pUrna;
+struct Urna *pUrna2;
 
 ISR(TIMER2_OVF_vect) {
   *contadorp++;
@@ -31,7 +31,7 @@ ISR(TIMER2_OVF_vect) {
     TCCR2B = 0x00; // Para o timer 2
     mandaStringSerial("UT");
     // TODO: arrumar issae, ir para menu daqui
-    pUrna->flagTimeoutVotacao = true;
+    pUrna2->flagTimeoutVotacao = true;
   }
 };
 
@@ -71,7 +71,7 @@ void contabilizaVoto(struct Candidato candidatos[3][7], char candidato[], int ca
 
 void votacao(struct Urna *urna, char eleitor[]) {
 
-  pUrna = urna;
+  pUrna2 = urna;
   int contador = 0, aux = 0;
   char resposta[20] = {0},
        candidatoSenador[20] = {0},
@@ -97,7 +97,7 @@ void votacao(struct Urna *urna, char eleitor[]) {
   display("vou receber", 1);
   aguardaTecla();
   // Votação para senador
-  recebeCandidato("Senador:", "US", eleitor, candidatoSenador, partidoSenador);
+  recebeCandidato("Senador:", "US", eleitor, candidatoSenador, (char *)partidoSenador);
   // Votação para governador
   recebeCandidato("Governador:", "UG", eleitor, candidatoGovernador, partidoGovernador);
   // Votação para presidente

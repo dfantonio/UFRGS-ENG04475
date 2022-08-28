@@ -25,13 +25,13 @@ void recebeSerialModulo(char *str) { // Recebe string
 long recebeHora() { // Recebe hora
   char str[2];
   long segundos = 0;
-  char minuto[2], hora[2];
+  char minuto, hora;
 
   leSerial(str, 2);
-  leCharSerial(hora);
-  leCharSerial(minuto);
+  leCharSerial(&hora);
+  leCharSerial(&minuto);
 
-  segundos = atoi(hora) * 3600 + atoi(minuto) * 60;
+  segundos = (long)hora * 3600 + (long)minuto * 60;
 
   return segundos;
 }

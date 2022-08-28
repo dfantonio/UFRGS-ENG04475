@@ -11,7 +11,7 @@
 // Linhas: PD4, PD5, PD6 e PD7
 void setupTeclado() {
   DDRC |= (1 << DD3) | (1 << DD4) | (1 << DD5);
-  DDRD &= (1 << DD4) | (1 << DD5) | (1 << DD6) | (1 << DD7);
+  DDRD &= ~((1 << DD6) | (1 << DD5) | (1 << DD6) | (1 << DD7));
 }
 
 // Transforma uma coordenada de linha e coluna no número pressionado

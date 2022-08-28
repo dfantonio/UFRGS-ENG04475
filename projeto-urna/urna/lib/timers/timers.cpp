@@ -1,6 +1,8 @@
 #include <avr/io.h>
 #include <stdio.h>
 
+#include "dados.h"
+
 void delayUs(int us) {
   if (256 - us * 2 > 0) {
     TCCR0A = 0;
@@ -38,4 +40,14 @@ void formataTempo(char *str, long tempo) {
   minutos = (tempo % 3600) / 60;
 
   sprintf(str, "%02d:%02d", horas, minutos);
+}
+
+void verificaHorario(struct Urna *urna) {
+  const long limiteHoraInferior = 8 * 60 * 60;
+  const long limiteHoraSuperior = (long)17 * 60 * 60 + 15 * 60;
+
+  if (urna->tempo < limiteHoraInferior) urna->estado = aguardando;
+  if (urna->tempo > limiteHoraSuperior) urna->estado = encerrado;
+  if (urna->tempo > limiteHoraInferior && urna->estado == aguardando)
+    urna->estado = operacional;
 }

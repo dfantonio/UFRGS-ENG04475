@@ -6,3 +6,6 @@ void delayMs(int ms);
 
 // Formata um número de segundos em hora:minutos
 void formataTempo(char *str, long tempo);
+
+// Troca de estados conforme o horário
+void verificaHorario(struct Urna *urna);
