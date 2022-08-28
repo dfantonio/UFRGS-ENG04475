@@ -48,4 +48,6 @@ void verificaHorario(struct Urna *urna) {
 
   if (urna->tempo < limiteHoraInferior) urna->estado = aguardando;
   if (urna->tempo > limiteHoraSuperior) urna->estado = encerrado;
+  if (urna->tempo > limiteHoraInferior && urna->estado == aguardando)
+    urna->estado = operacional;
 }
