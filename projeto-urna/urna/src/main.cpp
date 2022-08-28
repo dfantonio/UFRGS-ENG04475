@@ -1,27 +1,28 @@
 #include <avr/interrupt.h>
-#include <avr/io.h>
 
 #include "comunicaModulo.h"
 #include "dados.h"
-#include "estados.h"
-#include "serial.h"
 #include "setup.h"
+#include "timers.h"
 
-long *relogio;
+struct Urna *pUrna;
 
 ISR(TIMER1_OVF_vect) {
-  if (++*relogio >= 86400) *relogio = 0;
+  if (++pUrna->tempo >= 86400) pUrna->tempo = 0;
+  verificaHorario(pUrna);
+
+  pUrna->tempo += 30;
 
   TCNT1 = CONTADOR_TIM1_1S; // Recarrega o timer
   TIFR1 = 1;                // Limpa a flag de estouro
 };
 
 int main(void) {
-  setup();
+  struct Urna urna;
+  setup(&urna);
 
-  struct Urna urna = {autentica, 0};
   urna.tempo = recebeHora();
-  relogio = &urna.tempo;
+  pUrna = &urna;
 
   while (urna.proximo)
     urna.proximo(&urna);

@@ -1,9 +1,13 @@
+#include "dados.h"
+#include "estados.h"
 #include "lcd.h"
 #include "teclado.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
 
-void setup() {
+void defineEstadoInicial(struct Urna *urna);
+
+void setup(struct Urna *urna) {
   UCSR0B |= 16 + 8; // Habilita recepção e transmissão serial (RXEN0 e TXEN0)
   UBRR0 = 51;       // Valor para baud rate de 19200
 
@@ -17,4 +21,15 @@ void setup() {
 
   setupDisplay();
   setupTeclado();
+
+  defineEstadoInicial(urna);
+}
+
+void defineEstadoInicial(struct Urna *urna) {
+  urna->proximo = autentica;
+  urna->estado = operacional;
+  urna->tempo = 0;
+
+  // TODO: Popular o eleitor
+  //  urna->eleitor
 }

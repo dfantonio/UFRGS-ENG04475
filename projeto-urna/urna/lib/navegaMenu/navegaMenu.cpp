@@ -27,7 +27,7 @@ void navegaMenu(struct Urna *urna) {
 
     case 8:
       i++;
-      if (i == 6) i = 0;
+      if (i == 7) i = 0;
       break;
 
     case 5:
@@ -55,18 +55,24 @@ void navegaMenu(struct Urna *urna) {
       break;
 
     case 3:
+      display(">Consulta estado", 1);
+      if (j == 1)
+        urna->proximo = exibeEstado;
+      break;
+
+    case 4:
       display(">Troca estado", 1);
       if (j == 1)
         urna->proximo = trocaEstadoUrna;
       break;
 
-    case 4:
+    case 5:
       display(">Gera relatorio", 1);
       if (j == 1)
         urna->proximo = geraRelatorio;
       break;
 
-    case 5:
+    case 6:
       display(">Auditoria", 1);
       if (j == 1)
         urna->proximo = auditoria;
