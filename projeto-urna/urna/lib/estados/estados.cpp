@@ -27,18 +27,19 @@ char TEMP2[2];
 
 void autentica(struct Urna *urna) {
   int status;
-  display("Insira o codigo:");
+  display((char *)"Insira o codigo:");
+  urna->flagTimeoutVotacao = true;
 
   // Lê o código
   do {
     limpaLCD();
-    display("Insira o codigo:");
+    display((char *)"Insira o codigo:");
     leTeclado(TEMP5, 5, false);
 
     status = strcmp(TEMP5, CODIGO_MESARIO) != 0;
     if (status) {
       limpaLCD();
-      display("CODIGO INVALIDO");
+      display((char *)"CODIGO INVALIDO");
       aguardaTecla();
     }
   } while (status); // Repete enquanto o código for inválido
@@ -46,13 +47,13 @@ void autentica(struct Urna *urna) {
   // Lê a senha
   do {
     limpaLCD();
-    display("Insira a senha:");
+    display((char *)"Insira a senha:");
     leTeclado(TEMP5, 5, true);
 
     status = strcmp(TEMP5, SENHA_MESARIO) != 0;
     if (status) {
       limpaLCD();
-      display("SENHA INVALIDA");
+      display((char *)"SENHA INVALIDA");
       aguardaTecla();
     }
   } while (status);
@@ -62,7 +63,7 @@ void autentica(struct Urna *urna) {
 
 void menu(struct Urna *urna) {
   limpaLCD();
-  display("menu principal:");
+  display((char *)"menu principal:");
 
   urna->proximo = navegaMenu;
 }
@@ -70,7 +71,7 @@ void menu(struct Urna *urna) {
 void exibeHora(struct Urna *urna) {
   char horario[6];
   limpaLCD();
-  display("Hora atual:");
+  display((char *)"Hora atual:");
   formataTempo(horario, urna->tempo);
   display(horario, 1);
 
@@ -86,7 +87,7 @@ void defineHora(struct Urna *urna) {
 
   if (urna->estado == encerrado) {
     limpaLCD();
-    display("Nao pode alterar");
+    display((char *)"Nao pode alterar");
     aguardaTecla();
     return;
   }
@@ -94,14 +95,14 @@ void defineHora(struct Urna *urna) {
   // Proteção para que o horário seja válido
   do {
     limpaLCD();
-    display("Digite a hora:");
+    display((char *)"Digite a hora:");
     leTeclado(TEMP2, 2, false);
     hora = atoi(TEMP2);
   } while (hora > 23);
 
   do {
     limpaLCD();
-    display("Digite os min:");
+    display((char *)"Digite os min:");
     leTeclado(TEMP2, 2, false);
     minuto = atoi(TEMP2);
   } while (minuto > 59);
@@ -138,7 +139,7 @@ void populaEstado(char str[], enum Estados estado) {
 void exibeEstado(struct Urna *urna) {
   char estado[12];
   limpaLCD();
-  display("Estado atual:");
+  display((char *)"Estado atual:");
   populaEstado(estado, urna->estado);
   display(estado, 1);
 
@@ -155,7 +156,7 @@ void trocaEstadoUrna(struct Urna *urna) {
 
   if (urna->estado == encerrado || urna->estado == aguardando) {
     limpaLCD();
-    display("Nao pode alterar");
+    display((char *)"Nao pode alterar");
     aguardaTecla();
     return;
   }
@@ -173,7 +174,7 @@ void trocaEstadoUrna(struct Urna *urna) {
 
 void geraRelatorio(struct Urna *urna) {
   limpaLCD();
-  display("relatorio", 1);
+  display((char *)"relatorio", 1);
 }
 
 void validaEleitor(struct Urna *urna) {
@@ -184,27 +185,27 @@ void validaEleitor(struct Urna *urna) {
 
   do {
     limpaLCD();
-    display("Eleitor:");
+    display((char *)"Eleitor:");
     leTeclado(eleitor, 5, false);
-    enviaStringModulo("UN", n, eleitor);
+    enviaStringModulo((char *)"UN", n, eleitor);
     recebeSerialModulo(resposta);
     status = strcmp(resposta, "Codigo invalido") == 0;
     if (status) {
       limpaLCD();
-      display("Codigo invalido");
+      display((char *)"Codigo invalido");
       aguardaTecla();
     }
   } while (status);
-  display("votacao", 0);
+  display((char *)"votacao");
   aguardaTecla();
   votacao(urna, eleitor);
 }
 
 // TODO: TEM QUE TESTAR!!!
 void auditoria(struct Urna *urna) {
-  char i, j, votos, horas, minutos;
-  char verifica[10] = {0},
-       temp[3];
+  char votos, horas, minutos;
+  char verifica[10] = {0}, temp[3];
+  int i, j;
 
   for (j = 0; j == 2; j++) {
     for (i = 0; i == 6; i++) {

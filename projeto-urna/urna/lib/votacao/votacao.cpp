@@ -35,10 +35,9 @@ ISR(TIMER2_OVF_vect) {
   }
 };
 
-void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char *candidato, char *partido) {
-  char codigoCandidato[] = "00",
-       resposta[20] = {0},
-       confirma = 0;
+void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char candidato[], char partido[]) {
+  char codigoCandidato[3], resposta[20] = {0}, confirma = 0;
+
   do {
     limpaLCD();
     display(cargo, 0);
@@ -70,7 +69,6 @@ void contabilizaVoto(struct Candidato candidatos[3][7], char candidato[], int ca
 }
 
 void votacao(struct Urna *urna, char eleitor[]) {
-
   pUrna2 = urna;
   int contador = 0, aux = 0;
   char resposta[20] = {0},
@@ -97,7 +95,7 @@ void votacao(struct Urna *urna, char eleitor[]) {
   display("vou receber", 1);
   aguardaTecla();
   // Votação para senador
-  recebeCandidato("Senador:", "US", eleitor, candidatoSenador, (char *)partidoSenador);
+  recebeCandidato("Senador:", "US", eleitor, candidatoSenador, partidoSenador);
   // Votação para governador
   recebeCandidato("Governador:", "UG", eleitor, candidatoGovernador, partidoGovernador);
   // Votação para presidente

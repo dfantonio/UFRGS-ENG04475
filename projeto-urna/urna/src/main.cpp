@@ -14,6 +14,7 @@ ISR(TIMER1_OVF_vect) {
   if (++pUrna->tempo >= 86400) pUrna->tempo = 0;
   verificaHorario(pUrna);
 
+  // TODO: Modicação pra fazer o código contar mais rápido
   pUrna->tempo += 30;
 
   TCNT1 = CONTADOR_TIM1_1S; // Recarrega o timer
@@ -25,8 +26,7 @@ int main(void) {
   pUrna = &urna;
   setup(&urna);
 
-  display("Aguardando...", 1);
-
+  display((char *)"Aguardando...");
   urna.tempo = recebeHora();
 
   while (urna.proximo) {
