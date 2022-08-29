@@ -65,7 +65,6 @@ void setupDisplay() {
   comandoLCD(0x80); // Cursor no início do LCD
 }
 
-// TODO: Verona tem que fazer uma forma de limpar uma linha só, para quando o usuário apagar algum dígito
 void display(char texto[], int linha = 0) {
   char limpa[] = "                ";
   if (linha == 0) {

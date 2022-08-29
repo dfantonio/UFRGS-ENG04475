@@ -23,18 +23,15 @@ void geraRelatorio(struct Urna *urna);
 char TEMP5[5];
 char TEMP2[2];
 
-// TODO: Só é possível votar caso o estado da urna seja operacional
-
 void autentica(struct Urna *urna) {
   int status;
   display((char *)"Insira o codigo:");
-  urna->flagTimeoutVotacao = true;
 
   // Lê o código
   do {
     limpaLCD();
     display((char *)"Insira o codigo:");
-    leTeclado(TEMP5, 5, false);
+    leTeclado(TEMP5, 5, urna);
 
     status = strcmp(TEMP5, CODIGO_MESARIO) != 0;
     if (status) {
@@ -48,7 +45,7 @@ void autentica(struct Urna *urna) {
   do {
     limpaLCD();
     display((char *)"Insira a senha:");
-    leTeclado(TEMP5, 5, true);
+    leTeclado(TEMP5, 5, urna, true);
 
     status = strcmp(TEMP5, SENHA_MESARIO) != 0;
     if (status) {
@@ -75,7 +72,7 @@ void exibeHora(struct Urna *urna) {
   formataTempo(horario, urna->tempo);
   display(horario, 1);
 
-  leTeclado(TEMP2, 1, false);
+  leTeclado(TEMP2, 1, urna);
 
   urna->proximo = menu;
 }
@@ -96,14 +93,14 @@ void defineHora(struct Urna *urna) {
   do {
     limpaLCD();
     display((char *)"Digite a hora:");
-    leTeclado(TEMP2, 2, false);
+    leTeclado(TEMP2, 2, urna);
     hora = atoi(TEMP2);
   } while (hora > 23);
 
   do {
     limpaLCD();
     display((char *)"Digite os min:");
-    leTeclado(TEMP2, 2, false);
+    leTeclado(TEMP2, 2, urna);
     minuto = atoi(TEMP2);
   } while (minuto > 59);
 
@@ -143,7 +140,7 @@ void exibeEstado(struct Urna *urna) {
   populaEstado(estado, urna->estado);
   display(estado, 1);
 
-  leTeclado(TEMP2, 1, false);
+  leTeclado(TEMP2, 1, urna);
 
   urna->proximo = menu;
 }
@@ -166,7 +163,7 @@ void trocaEstadoUrna(struct Urna *urna) {
     display(linha1, 0);
     display(linha2, 1);
 
-    leTeclado(TEMP, 1, false);
+    leTeclado(TEMP, 1, urna);
     if (TEMP[0] == '0') urna->estado = operacional;
     if (TEMP[0] == '1') urna->estado = bloqueado;
   } while (!(TEMP[0] == '0' || TEMP[0] == '1'));
@@ -183,10 +180,17 @@ void validaEleitor(struct Urna *urna) {
   int status = 0;
   char n[] = "5";
 
+  if (urna->estado != operacional) {
+    limpaLCD();
+    display((char *)"Nao pode votar");
+    aguardaTecla();
+    return;
+  }
+
   do {
     limpaLCD();
     display((char *)"Eleitor:");
-    leTeclado(eleitor, 5, false);
+    leTeclado(eleitor, 5, urna);
     enviaStringModulo((char *)"UN", n, eleitor);
     recebeSerialModulo(resposta);
     status = strcmp(resposta, "Codigo invalido") == 0;
@@ -196,34 +200,25 @@ void validaEleitor(struct Urna *urna) {
       aguardaTecla();
     }
   } while (status);
-  display((char *)"votacao");
-  aguardaTecla();
   votacao(urna, eleitor);
 }
 
-// TODO: TEM QUE TESTAR!!!
 void auditoria(struct Urna *urna) {
-  char votos, horas, minutos;
-  char verifica[10] = {0}, temp[3];
-  int i, j;
+  int votos = 0, horas, minutos;
 
-  for (j = 0; j == 2; j++) {
-    for (i = 0; i == 6; i++) {
-      votos += urna->candidatos[j][i].votos;
+  for (int i = 0; i < N_CANDIDATO_LINHAS; i++) {
+    for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
+      votos += urna->candidatos[i][j].votos;
     }
   }
 
   horas = urna->tempo / 3600;
-  minutos = (urna->tempo - horas * 3600) / 60;
+  minutos = (urna->tempo % 3600) / 60;
 
-  strcpy(verifica, "UV");
-  convInt2Char(temp, horas);
-  strcat(verifica, temp);
-  convInt2Char(temp, minutos);
-  strcat(verifica, temp);
-  convInt2Char(temp, votos);
-  strcat(verifica, temp);
-  mandaStringSerial(verifica);
+  mandaStringSerial((char *)"UV");
+  mandaCharSerial(horas);
+  mandaCharSerial(minutos);
+  mandaCharSerial(votos);
 
   urna->proximo = menu;
 }

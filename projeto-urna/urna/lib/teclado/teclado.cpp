@@ -1,3 +1,4 @@
+#include "dados.h"
 #include "serial.h"
 #include "timers.h"
 #include <avr/io.h>
@@ -78,7 +79,7 @@ char index2Char(bool arr1[]) {
   }
 }
 
-char debounce() {
+char debounce(bool *flagTimeout) {
   bool referencia[TAM_TOTAL] = {0};
   bool novaLeitura[TAM_TOTAL] = {0};
 
@@ -88,6 +89,8 @@ char debounce() {
   while (1) {
     leMatriz(novaLeitura);
     resultadoComp = comparaArrays(referencia, novaLeitura);
+
+    if (*flagTimeout) return;
 
     delayMs(1);
 
@@ -116,14 +119,14 @@ void limpaStr(char *str, int tamanho) {
   }
 }
 
-void leTeclado(char *str, int tamanho, bool senha = false) {
+void leTeclado(char *str, int tamanho, struct Urna *urna, bool senha = false) {
   char asteriscos[tamanho + 1] = {0};
   char letra;
 
   limpaStr(str, tamanho);
 
   for (int i = 0; i < tamanho; i++) {
-    letra = debounce();
+    letra = debounce(&urna->flagTimeoutVotacao);
     if (letra == ';') { // Caso seja o #, atua como backspace e apaga um caracter
       if (i > 0) {
         str[i - 1] = 0;
@@ -141,5 +144,6 @@ void leTeclado(char *str, int tamanho, bool senha = false) {
 }
 
 void aguardaTecla() {
-  debounce();
+  bool flagTimeout = false;
+  debounce(&flagTimeout);
 }
