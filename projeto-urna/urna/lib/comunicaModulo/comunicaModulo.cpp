@@ -11,7 +11,7 @@ void enviaStringModulo(char primeiro[], char n[], char codigo[]) {
 }
 
 void auditaSerial(int hora, int min, int votos) {
-  mandaStringSerial("UV");
+  mandaStringSerial((char *)"UV");
   mandaCharSerial(hora);
   mandaCharSerial(min);
   mandaCharSerial(votos);
