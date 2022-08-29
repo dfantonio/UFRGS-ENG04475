@@ -14,7 +14,7 @@ int *contadorp, *auxp;
 struct Urna *pUrna2;
 
 ISR(TIMER2_OVF_vect) {
-  *contadorp++;
+  ++*contadorp;
 
   TCNT2 = 100; // Recarrega o timer
   TIFR2 = 1;   // Limpa a flag de estouro
@@ -23,7 +23,7 @@ ISR(TIMER2_OVF_vect) {
     if (*contadorp >= 10000 + 1500 * (*auxp)) {
       // led = !led
     }
-    *auxp++;
+    ++*auxp;
   }
 
   if (*contadorp == 1200) {

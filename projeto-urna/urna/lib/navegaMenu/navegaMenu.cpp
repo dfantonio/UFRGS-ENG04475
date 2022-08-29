@@ -23,7 +23,7 @@ void navegaMenu(struct Urna *urna) {
       {">Troca hora", defineHora},
       {">Consulta estado", exibeEstado},
       {">Troca estado", trocaEstadoUrna},
-      {">Gera relatorio", geraRelatorio},
+      {">Gera relatorio", mandaRelatorio},
       {">Auditoria", auditoria},
   };
 
