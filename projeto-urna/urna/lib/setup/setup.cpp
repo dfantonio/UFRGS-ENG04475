@@ -29,7 +29,13 @@ void defineEstadoInicial(struct Urna *urna) {
   urna->proximo = autentica;
   urna->estado = operacional;
   urna->tempo = 0;
+  urna->flagTimeoutVotacao = false;
 
-  // TODO: Popular o eleitor
-  //  urna->eleitor
+  for (int i = 0; i < N_CANDIDATO_LINHAS; i++) {
+    for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
+      urna->candidatos[i][j].votos = 0;
+      urna->candidatos[i][j].nome[0] = 0;
+      urna->candidatos[i][j].partido[0] = 0;
+    }
+  }
 }

@@ -2,6 +2,9 @@
 
 typedef void funcaoDoEstado(struct Urna *);
 
+#define N_CANDIDATO_LINHAS  3
+#define N_CANDIDATO_COLUNAS 7
+
 enum Estados {
   operacional,
   bloqueado,
@@ -11,8 +14,18 @@ enum Estados {
 
 struct Eleitor {
   char nome[20];
-  char codigo[6];
-  int votos[3];
+};
+
+enum cargos {
+  Presidente,
+  Governador,
+  Senador
+};
+
+struct Candidato {
+  char nome[30];
+  char partido[17];
+  int votos;
 };
 
 struct Urna {
@@ -20,4 +33,6 @@ struct Urna {
   enum Estados estado;
   long tempo;
   struct Eleitor eleitor;
+  struct Candidato candidatos[N_CANDIDATO_LINHAS][N_CANDIDATO_COLUNAS]; // Linha: cargos, Coluna: candidatos
+  bool flagTimeoutVotacao;
 };

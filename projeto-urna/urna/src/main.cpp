@@ -2,6 +2,9 @@
 
 #include "comunicaModulo.h"
 #include "dados.h"
+#include "estados.h"
+#include "lcd.h"
+#include "serial.h"
 #include "setup.h"
 #include "timers.h"
 
@@ -11,6 +14,7 @@ ISR(TIMER1_OVF_vect) {
   if (++pUrna->tempo >= 86400) pUrna->tempo = 0;
   verificaHorario(pUrna);
 
+  // TODO: Modicação pra fazer o código contar mais rápido
   pUrna->tempo += 30;
 
   TCNT1 = CONTADOR_TIM1_1S; // Recarrega o timer
@@ -19,11 +23,17 @@ ISR(TIMER1_OVF_vect) {
 
 int main(void) {
   struct Urna urna;
+  pUrna = &urna;
   setup(&urna);
 
+  display((char *)"Aguardando...");
   urna.tempo = recebeHora();
-  pUrna = &urna;
 
-  while (urna.proximo)
+  while (urna.proximo) {
+    if (urna.flagTimeoutVotacao) {
+      urna.flagTimeoutVotacao = false;
+      urna.proximo = menu;
+    }
     urna.proximo(&urna);
+  }
 }

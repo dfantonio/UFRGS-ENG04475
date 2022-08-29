@@ -1,6 +1,3 @@
-/**
- * Alguma documentação da função, dizendo o que ela faz ou algo assim
- */
 void setup(struct Urna *urna);
 
 #define CODIGO_MESARIO "01237"

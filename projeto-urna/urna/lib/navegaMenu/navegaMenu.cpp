@@ -32,7 +32,7 @@ void navegaMenu(struct Urna *urna) {
   do {
     do {
       display(menu[i].titulo, 1);
-      leTeclado(&temp, 1);
+      leTeclado(&temp, 1, urna);
       if (temp == '5') {
         urna->proximo = menu[i].proximo;
         return;
