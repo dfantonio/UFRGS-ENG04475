@@ -2,6 +2,7 @@
 #include "dados.h"
 #include "lcd.h"
 #include "navegaMenu.h"
+#include "relatorio.h"
 #include "serial.h"
 #include "setup.h"
 #include "teclado.h"
@@ -18,7 +19,7 @@ void defineHora(struct Urna *urna);
 void trocaEstadoUrna(struct Urna *urna);
 void auditoria(struct Urna *urna);
 void validaEleitor(struct Urna *urna);
-void geraRelatorio(struct Urna *urna);
+void mandaRelatorio(struct Urna *urna);
 
 char TEMP5[5];
 char TEMP2[2];
@@ -169,9 +170,13 @@ void trocaEstadoUrna(struct Urna *urna) {
   } while (!(TEMP[0] == '0' || TEMP[0] == '1'));
 }
 
-void geraRelatorio(struct Urna *urna) {
+void mandaRelatorio(struct Urna *urna) {
+  geraRelatorio(urna);
   limpaLCD();
-  display((char *)"relatorio", 1);
+  display((char *)"   relatorio");
+  display((char *)"    enviado", 1);
+  aguardaTecla();
+  urna->proximo = menu;
 }
 
 void validaEleitor(struct Urna *urna) {
@@ -179,6 +184,7 @@ void validaEleitor(struct Urna *urna) {
   char resposta[16];
   int status = 0;
   char n[] = "5";
+  urna->proximo = menu;
 
   if (urna->estado != operacional) {
     limpaLCD();

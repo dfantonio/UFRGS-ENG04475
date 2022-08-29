@@ -4,6 +4,7 @@
 #include "teclado.h"
 #include <avr/interrupt.h>
 #include <avr/io.h>
+#include <string.h>
 
 void defineEstadoInicial(struct Urna *urna);
 
@@ -38,4 +39,13 @@ void defineEstadoInicial(struct Urna *urna) {
       urna->candidatos[i][j].partido[0] = 0;
     }
   }
+
+  // Dados de teste:
+
+  // urna->candidatos[0][0].votos = 5;
+  // strcpy(urna->candidatos[0][0].partido, "PT");
+  // strcpy(urna->candidatos[0][0].nome, "Airton Pinto");
+  // urna->candidatos[0][1].votos = 39;
+  // strcpy(urna->candidatos[0][1].partido, "PSDB");
+  // strcpy(urna->candidatos[0][1].nome, "Jair bolsonaro");
 }

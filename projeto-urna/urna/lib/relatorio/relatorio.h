@@ -1,0 +1,1 @@
+void geraRelatorio(struct Urna *urna);

@@ -16,7 +16,7 @@ struct Eleitor {
   char nome[20];
 };
 
-enum cargos {
+enum Cargos {
   Presidente,
   Governador,
   Senador
