@@ -226,5 +226,7 @@ void auditoria(struct Urna *urna) {
   mandaCharSerial(minutos);
   mandaCharSerial(votos);
 
+  // TODO: Ouvir o retorno da auditoria
+
   urna->proximo = menu;
 }

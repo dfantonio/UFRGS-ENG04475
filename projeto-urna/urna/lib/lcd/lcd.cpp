@@ -69,9 +69,8 @@ void limpaLCD() {
 
 void setupDisplay() {
   // Configura todas as coisas necessárias pro display
-  DDRC |= (1 << DD0) | (1 << DD1) | (1 << DD2);                                        // Porta C é saída
-  DDRB |= (1 << DD0) | (1 << DD1) | (1 << DD2) | (1 << DD3) | (1 << DD4) | (1 << DD5); // Porta B é saída
-  DDRD |= (1 << DD2) | (1 << DD3);
+  DDRC |= (1 << DD0) | (1 << DD1) | (1 << DD2);              // Porta C é saída
+  DDRB |= (1 << DD0) | (1 << DD1) | (1 << DD2) | (1 << DD3); // Porta B é saída
 
   delayMs(10);
   delayMs(10);

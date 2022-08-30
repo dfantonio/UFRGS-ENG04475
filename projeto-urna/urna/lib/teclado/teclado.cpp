@@ -77,6 +77,7 @@ char index2Char(bool arr1[]) {
   for (int i = 0; i < TAM_TOTAL; i++) {
     if (arr1[i]) return i + '0'; // O 0 é utilizado pra chegar nos números da tabela ASCII
   }
+  return 0;
 }
 
 char debounce(bool *flagTimeout) {
@@ -90,7 +91,7 @@ char debounce(bool *flagTimeout) {
     leMatriz(novaLeitura);
     resultadoComp = comparaArrays(referencia, novaLeitura);
 
-    if (*flagTimeout) return;
+    if (*flagTimeout) return 0;
 
     delayMs(1);
 
