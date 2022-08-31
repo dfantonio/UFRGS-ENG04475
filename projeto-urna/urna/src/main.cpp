@@ -6,6 +6,7 @@
 #include "lcd.h"
 #include "serial.h"
 #include "setup.h"
+#include "teclado.h"
 #include "timers.h"
 
 struct Urna *pUrna;
@@ -22,6 +23,7 @@ ISR(TIMER1_OVF_vect) {
 };
 
 int main(void) {
+  char TEMP[3];
   struct Urna urna;
   pUrna = &urna;
   setup(&urna);
@@ -31,7 +33,11 @@ int main(void) {
 
   while (urna.proximo) {
     if (urna.flagTimeoutVotacao) {
+      leSerial(TEMP, 2);
       urna.flagTimeoutVotacao = false;
+      limpaLCD();
+      display("Tempo expirado");
+      aguardaTecla();
       urna.proximo = menu;
     }
     urna.proximo(&urna);

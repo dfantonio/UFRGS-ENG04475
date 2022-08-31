@@ -19,6 +19,7 @@ void delayUs(int us) {
     ; // Aguarda flag de estouro
 
   TIFR0 = 1; // Limpa flag
+  TCCR0B = 0;
 }
 
 void delayMs(int ms) {
@@ -31,6 +32,7 @@ void delayMs(int ms) {
     ; // Aguarda flag de estouro
 
   TIFR0 = 1; // Limpa flag
+  TCCR0B = 0;
 }
 
 void formataTempo(char *str, long tempo) {

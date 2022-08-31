@@ -20,17 +20,16 @@ ISR(TIMER2_OVF_vect) {
   TCNT2 = 100; // Recarrega o timer
   TIFR2 = 1;   // Limpa a flag de estouro
 
-  if (*contadorp >= 10000) {
-    if (*contadorp >= 10000 + 1500 * (*auxp)) {
-      // led = !led
-    }
+  if (*contadorp >= 10000 + 25 * (*auxp)) {
+    PORTB ^= (1 << 5); // Inverte o led
     ++*auxp;
   }
 
-  if (*contadorp == 1200) {
+  if (*contadorp == 12000) {
     *contadorp = 0;
     TCCR2B = 0x00; // Para o timer 2
     mandaStringSerial((char *)"UT");
+    PORTB = (0 << 5); // desliga o led
     pUrna2->flagTimeoutVotacao = true;
   }
 };
@@ -54,6 +53,7 @@ void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char can
       display(candidato, 0);
       display((char *)"1-SIM   2-NAO", 1);
       leTeclado(&confirma, 1, urna);
+      if (false) return;
     } while (confirma != '1' && confirma != '2');
   } while (confirma == '2');
 }
@@ -92,6 +92,7 @@ void votacao(struct Urna *urna, char eleitor[]) {
   TCNT2 = 100;
   TIMSK2 = 0x01;
   sei();
+  DDRB |= (1 << 5); // Pino 5 da porta b é saída
 
   mandaStringSerial((char *)"UI");
   leSerial(resposta, 2);
@@ -112,5 +113,6 @@ void votacao(struct Urna *urna, char eleitor[]) {
 
   mandaStringSerial((char *)"UC");
   somFimVotacao();
+  PORTB = (0 << 5); // desliga o led
   urna->proximo = menu;
 }
