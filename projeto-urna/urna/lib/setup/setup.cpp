@@ -1,3 +1,4 @@
+#include "buzzer.h"
 #include "dados.h"
 #include "estados.h"
 #include "lcd.h"
@@ -22,6 +23,7 @@ void setup(struct Urna *urna) {
 
   setupDisplay();
   setupTeclado();
+  setupBuzzer();
 
   defineEstadoInicial(urna);
 }
