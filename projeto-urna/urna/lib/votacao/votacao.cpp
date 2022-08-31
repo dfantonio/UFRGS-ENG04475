@@ -1,3 +1,4 @@
+#include "buzzer.h"
 #include "comunicaModulo.h"
 #include "dados.h"
 #include "estados.h"
@@ -110,7 +111,6 @@ void votacao(struct Urna *urna, char eleitor[]) {
   contabilizaVoto(candidatoPresidente, Presidente, partidoPresidente);
 
   mandaStringSerial((char *)"UC");
-
-  // TODO: Tocar som
+  somFimVotacao();
   urna->proximo = menu;
 }

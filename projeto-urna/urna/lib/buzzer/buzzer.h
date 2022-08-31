@@ -1,0 +1,3 @@
+void somFimVotacao();
+
+void setupBuzzer();

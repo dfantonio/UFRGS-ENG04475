@@ -26,7 +26,6 @@ char TEMP2[2];
 
 void autentica(struct Urna *urna) {
   int status;
-  display((char *)"Insira o codigo:");
 
   // Lê o código
   do {
