@@ -33,6 +33,7 @@ int main(void) {
 
   while (urna.proximo) {
     if (urna.flagTimeoutVotacao) {
+      mandaStringSerial((char *)"UT");
       leSerial(TEMP, 2);
       urna.flagTimeoutVotacao = false;
       limpaLCD();
