@@ -27,7 +27,7 @@ ISR(TIMER2_OVF_vect) {
 
   if (*contadorp == 12000) {
     *contadorp = 0;
-    TCCR2B = 0x00; // Para o timer 2
+    TCCR2B = 0x00;        // Para o timer 2
     PORTD &= ~(1 << DD3); // desliga o led
     pUrna2->flagTimeoutVotacao = true;
   }
@@ -108,7 +108,9 @@ void votacao(struct Urna *urna, char eleitor[]) {
   contabilizaVoto(candidatoPresidente, Presidente, partidoPresidente);
 
   mandaStringSerial((char *)"UC");
+  leSerial(resposta, 2);
+
   somFimVotacao();
-    PORTD &= ~(1 << DD3); // desliga o led
+  PORTD &= ~(1 << DD3); // desliga o led
   urna->proximo = menu;
 }
