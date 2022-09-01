@@ -21,6 +21,9 @@ void setup(struct Urna *urna) {
 
   TCNT1 = 3036; // Define o tempo da 1ª contagem do timer
 
+  DDRD |= (1 << DD3); // Pino 3 da porta d é saída
+  TIMSK2 = 0x01;      // Interrupção timer 2
+
   setupDisplay();
   setupTeclado();
   setupBuzzer();
