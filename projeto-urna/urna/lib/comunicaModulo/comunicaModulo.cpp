@@ -19,16 +19,14 @@ void auditaSerial(int hora, int min, int votos) {
 }
 
 void recebeSerialModulo(char *str) { // Recebe string
-  leSerial(str, 3);
-  leSerial(str, str[2]);
+  leSerial(str, 1);
+  leSerial(str, str[0]);
 }
 
 long recebeHora() { // Recebe hora
-  char str[2];
   long segundos = 0;
   char minuto, hora;
 
-  leSerial(str, 2);
   leCharSerial(&hora);
   leCharSerial(&minuto);
 

@@ -85,7 +85,4 @@ void geraRelatorio(struct Urna *urna) {
   mandaCharSerial(tamanho2);
 
   mandaStringSerial(compilado);
-
-  char resposta[3];
-  leSerial(resposta, 2);
 }

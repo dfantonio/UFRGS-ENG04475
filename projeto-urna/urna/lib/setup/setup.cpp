@@ -49,13 +49,4 @@ void defineEstadoInicial(struct Urna *urna) {
   for (uint8_t i = 0; i < N_ELEITORES; i++) {
     urna->listaEleitores[i] = 0;
   }
-
-  // Dados de teste:
-
-  // urna->candidatos[0][0].votos = 5;
-  // strcpy(urna->candidatos[0][0].partido, "PT");
-  // strcpy(urna->candidatos[0][0].nome, "Airton Pinto");
-  // urna->candidatos[0][1].votos = 39;
-  // strcpy(urna->candidatos[0][1].partido, "PSDB");
-  // strcpy(urna->candidatos[0][1].nome, "Jair bolsonaro");
 }

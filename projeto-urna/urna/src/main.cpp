@@ -8,12 +8,22 @@
 #include "setup.h"
 #include "teclado.h"
 #include "timers.h"
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 char TEMP[3];
 struct Urna urna;
+ISR(USART_TX_vect) {
+  limpaLCD();
+  display("aque");
+  aguardaTecla();
+  leSerial(TEMP, 2);
+  if (!(strcmp(TEMP, "MH"))) {
+    urna.tempo = recebeHora();
+    mandaStringSerial((char *)"UH");
+  }
+}
 
 // Fazer recepção serial assíncrona via interrupção
 // Pra não depender de receber a hora pra iniciar a urna. (colocar o status default como aguardando)
@@ -28,16 +38,11 @@ ISR(TIMER1_OVF_vect) {
 int main(void) {
   setup(&urna);
 
-  display((char *)"Aguardando...");
-  urna.tempo = recebeHora();
-  mandaStringSerial((char *)"UH");
-
   urna.tempo = (long)10 * 60 * 60;
 
   while (urna.proximo) {
     if (urna.flagTimeoutVotacao) {
       mandaStringSerial((char *)"UT");
-      leSerial(TEMP, 2);
       urna.flagTimeoutVotacao = false;
       limpaLCD();
       display("Tempo expirado");

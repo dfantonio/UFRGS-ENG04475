@@ -93,7 +93,6 @@ void votacao(struct Urna *urna) {
   TCNT2 = 100;
 
   mandaStringSerial((char *)"UI");
-  leSerial(resposta, 2);
   // Votação para senador
   recebeCandidato((char *)"Senador:", (char *)"US", urna->eleitor.nome, candidatoSenador, urna);
   // Votação para governador
@@ -109,7 +108,6 @@ void votacao(struct Urna *urna) {
   contabilizaVoto(candidatoPresidente, Presidente);
 
   mandaStringSerial((char *)"UC");
-  leSerial(resposta, 2);
 
   somFimVotacao();
   PORTD &= ~(1 << DD3); // desliga o led

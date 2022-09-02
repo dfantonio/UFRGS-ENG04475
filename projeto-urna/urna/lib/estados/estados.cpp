@@ -241,7 +241,7 @@ void validaEleitor(struct Urna *urna) {
 
 void auditoria(struct Urna *urna) {
   int votos = 0, horas, minutos;
-  char resposta[4] = {0};
+  char resposta[2] = {0};
 
   for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
     votos += urna->candidatos[Senador][j].votos;
@@ -255,12 +255,12 @@ void auditoria(struct Urna *urna) {
   mandaCharSerial(minutos);
   mandaCharSerial(votos);
 
-  leSerial(resposta, 3);
-  if (!(strcmp(resposta, "MVO")))
+  leSerial(resposta, 1);
+  if (!(strcmp(resposta, "O")))
     urna->proximo = menu;
-  else if (!(strcmp(resposta, "MVI")))
+  else if (!(strcmp(resposta, "I")))
     urna->proximo = auditoria;
-  else if (!(strcmp(resposta, "MVX"))) {
+  else if (!(strcmp(resposta, "X"))) {
     urna->proximo = autentica;
     urna->estado = bloqueado;
   }
