@@ -1,3 +1,4 @@
+#include "SMA.h"
 #include "comunicaModulo.h"
 #include "dados.h"
 #include "lcd.h"
@@ -178,9 +179,18 @@ void mandaRelatorio(struct Urna *urna) {
   urna->proximo = menu;
 }
 
+void separaNome(char nome[]) {
+  for (uint8_t i = 0; nome[i] != 0; i++) {
+    if (nome[i] == ' ') {
+      nome[i] = 0;
+      return;
+    }
+  }
+}
+
 void validaEleitor(struct Urna *urna) {
   char eleitor[] = "00000";
-  char resposta[16];
+  char resposta[17];
   int status = 0;
   char n[] = "5";
   urna->proximo = menu;
@@ -198,14 +208,18 @@ void validaEleitor(struct Urna *urna) {
     leTeclado(eleitor, 5, urna);
     enviaStringModulo((char *)"UN", n, eleitor);
     recebeSerialModulo(resposta);
-    status = strcmp(resposta, "Codigo invalido") == 0;
+
+    decriptografaComChave(urna->eleitor.nome, resposta, urna->chaveCriptografia);
+    separaNome(urna->eleitor.nome);
+
+    status = strcmp(urna->eleitor.nome, "Codigo invalido") == 0;
     if (status) {
       limpaLCD();
       display((char *)"Codigo invalido");
       aguardaTecla();
     }
   } while (status);
-  votacao(urna, eleitor);
+  votacao(urna);
 }
 
 void auditoria(struct Urna *urna) {

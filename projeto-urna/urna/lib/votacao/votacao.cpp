@@ -34,9 +34,12 @@ ISR(TIMER2_OVF_vect) {
 };
 
 void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char codigoCandidato[], struct Urna *urna) {
-  char partido[13] = {0}, candidato[20] = {0}, resposta[20] = {0}, confirma = 0;
-
+  char partido[13] = {0}, candidato[20] = {0}, confirma = 0;
+  char resposta[50] = {0};
   do {
+    candidato[0] = 0;
+    partido[0] = 0;
+
     limpaLCD();
     display(cargo, 0);
     leTeclado(codigoCandidato, 2, urna);
@@ -45,7 +48,9 @@ void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char cod
 
     enviaStringModulo(codigoModulo, (char *)"2", codigoCandidato);
     recebeSerialModulo(resposta);
-    desembaralha(resposta, eleitor, candidato, partido);
+    if (pUrna2->flagTimeoutVotacao) return;
+
+    desembaralha(resposta, pUrna2->eleitor.nome, candidato, partido, &pUrna2->chaveCriptografia);
 
     do {
       limpaLCD();
@@ -70,7 +75,7 @@ void contabilizaVoto(char codigoCandidato[], enum Cargos cargo) {
   pUrna2->candidatos[cargo][i].votos++;
 }
 
-void votacao(struct Urna *urna, char eleitor[]) {
+void votacao(struct Urna *urna) {
   pUrna2 = urna;
   int contador = 0, aux = 0;
   char resposta[20] = {0},
@@ -89,13 +94,12 @@ void votacao(struct Urna *urna, char eleitor[]) {
 
   mandaStringSerial((char *)"UI");
   leSerial(resposta, 2);
-
   // Votação para senador
-  recebeCandidato((char *)"Senador:", (char *)"US", eleitor, candidatoSenador, urna);
+  recebeCandidato((char *)"Senador:", (char *)"US", urna->eleitor.nome, candidatoSenador, urna);
   // Votação para governador
-  recebeCandidato((char *)"Governador:", (char *)"UG", eleitor, candidatoGovernador, urna);
+  recebeCandidato((char *)"Governador:", (char *)"UG", urna->eleitor.nome, candidatoGovernador, urna);
   // Votação para presidente
-  recebeCandidato((char *)"Presidente:", (char *)"UP", eleitor, candidatoPresidente, urna);
+  recebeCandidato((char *)"Presidente:", (char *)"UP", urna->eleitor.nome, candidatoPresidente, urna);
 
   if (pUrna2->flagTimeoutVotacao) return;
 

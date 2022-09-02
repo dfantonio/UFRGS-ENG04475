@@ -1,3 +1,4 @@
+#include "SMA.h"
 #include "serial.h"
 #include <avr/io.h>
 #include <stdio.h>
@@ -36,25 +37,61 @@ long recebeHora() { // Recebe hora
   return segundos;
 }
 
-void desembaralha(char embaralhado[], char *eleitor, char *candidato, char *partido) {
-  int i = 0, j = 0, k = 0;
+void removeEspacoString(char *str) {
+  if (str[0] == ' ')
+    for (int i = 0; str[i] != 0; i++) {
+      str[i] = str[i + 1];
+    }
+}
+
+void desembaralha(char embaralhado[], char *eleitor, char *candidato, char *partido, int *chave) {
   char aux[20] = {0};
+  char separados[3][20]; // Matrix com os 3 textos separados
+  int indexEleitor = 0;  // Índice da matriz que está com o nome do eleitor (que a gente conhece)
+  int i = 0, j = 0, k = 0;
+  int chaveTemp = 0;
+
   // Separa as palavras
-  for (j = 0; j < 2; j++) {
+  for (j = 0; j < 3; j++) {
     k = 0;
     do {
+      // Caso a palavra comece num índice ímpar eu adiciono um espaço
+      // pro código descriptografar certo
+      if (k == 0 && i % 2 == 1) {
+        k++;
+        aux[0] = ' ';
+      }
       aux[k] = embaralhado[i];
       i++;
       k++;
+
     } while (embaralhado[i - 1] != 0);
-    // TODO: IMPLEMENTAR DO MODO COM CRIPTIPTOGRAFIA
-    // Decriptografa aux
-    // Caso seja partido, começa com "P"
-    if (j == 1)
-      strcpy(partido, aux);
-    // Caso seja nome do candidato, não é partido, nem o nome do eleitor
-    // else if (strcmp(eleitor, aux) != 0)
-    else
-      strcpy(candidato, aux);
+
+    decriptografaSemChave(aux, eleitor, &chaveTemp);
+
+    // Tento decriptografar todas as frases. Quando a chave é algo válido eu sei que é o primeiro nome do eleitor
+    if (chaveTemp < 27) {
+      *chave = chaveTemp;
+      indexEleitor = j;
+    }
+    strcpy(separados[j], aux);
   }
+
+  switch (indexEleitor) {
+  case 0:
+    decriptografaComChave(candidato, separados[1], *chave);
+    decriptografaComChave(partido, separados[2], *chave);
+    break;
+  case 1:
+    decriptografaComChave(candidato, separados[0], *chave);
+    decriptografaComChave(partido, separados[2], *chave);
+    break;
+  case 2:
+    decriptografaComChave(candidato, separados[0], *chave);
+    decriptografaComChave(partido, separados[1], *chave);
+    break;
+  }
+
+  removeEspacoString(candidato);
+  removeEspacoString(partido);
 }

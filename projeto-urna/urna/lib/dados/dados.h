@@ -34,4 +34,5 @@ struct Urna {
   struct Eleitor eleitor;
   struct Candidato candidatos[N_CANDIDATO_LINHAS][N_CANDIDATO_COLUNAS]; // Linha: cargos, Coluna: candidatos
   bool flagTimeoutVotacao;
+  int chaveCriptografia;
 };

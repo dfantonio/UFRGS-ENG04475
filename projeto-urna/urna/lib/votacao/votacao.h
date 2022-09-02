@@ -1,2 +1,2 @@
 // Processo de votação
-void votacao(struct Urna *urna, char eleitor[]);
+void votacao(struct Urna *urna);
