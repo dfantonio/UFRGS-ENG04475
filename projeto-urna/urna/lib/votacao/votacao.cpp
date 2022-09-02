@@ -119,7 +119,24 @@ void votacao(struct Urna *urna) {
   for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
     votos += urna->candidatos[Senador][j].votos;
   }
-  if (votos == 33) urna->estado = encerrado;
+  if (votos == N_ELEITORES) urna->estado = encerrado;
 
   urna->proximo = menu;
+}
+
+bool eleitorValido(struct Urna *urna, int matricula) {
+  for (uint8_t i = 0; i < N_ELEITORES; i++) {
+    if (urna->listaEleitores[i] == matricula)
+      return false;
+  }
+  return true;
+}
+
+void adicionaEleitorLista(struct Urna *urna, int matricula) {
+  for (uint8_t i = 0; i < N_ELEITORES; i++) {
+    if (urna->listaEleitores[i] == 0) {
+      urna->listaEleitores[i] = matricula;
+      return;
+    }
+  }
 }

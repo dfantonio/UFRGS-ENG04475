@@ -46,6 +46,10 @@ void defineEstadoInicial(struct Urna *urna) {
     }
   }
 
+  for (uint8_t i = 0; i < N_ELEITORES; i++) {
+    urna->listaEleitores[i] = 0;
+  }
+
   // Dados de teste:
 
   // urna->candidatos[0][0].votos = 5;

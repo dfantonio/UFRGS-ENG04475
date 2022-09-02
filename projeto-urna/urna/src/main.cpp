@@ -15,6 +15,8 @@
 char TEMP[3];
 struct Urna urna;
 
+// Fazer recepção serial assíncrona via interrupção
+// Pra não depender de receber a hora pra iniciar a urna. (colocar o status default como aguardando)
 ISR(TIMER1_OVF_vect) {
   if (++urna.tempo >= 86400) urna.tempo = 0;
   verificaHorario(&urna);

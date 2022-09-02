@@ -166,7 +166,10 @@ void trocaEstadoUrna(struct Urna *urna) {
 
     leTeclado(TEMP, 1, urna);
     if (TEMP[0] == '0') urna->estado = operacional;
-    if (TEMP[0] == '1') urna->estado = bloqueado;
+    if (TEMP[0] == '1') {
+      urna->estado = bloqueado;
+      urna->proximo = autentica;
+    }
   } while (!(TEMP[0] == '0' || TEMP[0] == '1'));
 }
 
@@ -209,7 +212,21 @@ void validaEleitor(struct Urna *urna) {
     enviaStringModulo((char *)"UN", n, eleitor);
     recebeSerialModulo(resposta);
 
+    if (!eleitorValido(urna, atoi(eleitor))) {
+      limpaLCD();
+      display((char *)"Eleitor ja votou");
+      aguardaTecla();
+      return;
+    }
+    adicionaEleitorLista(urna, atoi(eleitor));
+
     decriptografaComChave(urna->eleitor.nome, resposta, urna->chaveCriptografia);
+
+    limpaLCD();
+    display((char *)"Nome:");
+    display(urna->eleitor.nome, 1);
+    aguardaTecla();
+
     separaNome(urna->eleitor.nome);
 
     status = strcmp(urna->eleitor.nome, "Codigo invalido") == 0;
