@@ -33,8 +33,8 @@ ISR(TIMER2_OVF_vect) {
   }
 };
 
-void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char candidato[], char partido[], struct Urna *urna) {
-  char codigoCandidato[2], resposta[20] = {0}, confirma = 0;
+void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char codigoCandidato[], struct Urna *urna) {
+  char partido[13] = {0}, candidato[20] = {0}, resposta[20] = {0}, confirma = 0;
 
   do {
     limpaLCD();
@@ -55,18 +55,18 @@ void recebeCandidato(char cargo[], char codigoModulo[], char eleitor[], char can
       if (pUrna2->flagTimeoutVotacao) return;
     } while (confirma != '1' && confirma != '2');
   } while (confirma == '2');
+  if (!(strcmp("Voto NULO", candidato))) strcpy(codigoCandidato, "99");
 }
 
-void contabilizaVoto(char candidato[], enum Cargos cargo, char partido[]) {
+void contabilizaVoto(char codigoCandidato[], enum Cargos cargo) {
   int i = 0;
   for (; i < N_CANDIDATO_COLUNAS; i++) {
-    bool isNomeCorreto = !strcmp(candidato, pUrna2->candidatos[cargo][i].nome);
-    bool isNomeVazio = pUrna2->candidatos[cargo][i].nome[0] == 0;
-    if (isNomeCorreto || isNomeVazio) break;
+    bool isCodigoCorreto = !strcmp(codigoCandidato, pUrna2->candidatos[cargo][i].codigo);
+    bool isCodigoVazio = pUrna2->candidatos[cargo][i].codigo[0] == 0;
+    if (isCodigoCorreto || isCodigoVazio) break;
   }
 
-  strcpy(pUrna2->candidatos[cargo][i].nome, candidato);
-  strcpy(pUrna2->candidatos[cargo][i].partido, partido);
+  strcpy(pUrna2->candidatos[cargo][i].codigo, codigoCandidato);
   pUrna2->candidatos[cargo][i].votos++;
 }
 
@@ -74,12 +74,9 @@ void votacao(struct Urna *urna, char eleitor[]) {
   pUrna2 = urna;
   int contador = 0, aux = 0;
   char resposta[20] = {0},
-       candidatoSenador[20] = {0},
-       candidatoGovernador[20] = {0},
-       candidatoPresidente[20] = {0},
-       partidoSenador[14] = {0},
-       partidoGovernador[14] = {0},
-       partidoPresidente[14] = {0};
+       candidatoSenador[3] = {0},
+       candidatoGovernador[3] = {0},
+       candidatoPresidente[3] = {0};
 
   contadorp = &contador;
 
@@ -94,23 +91,31 @@ void votacao(struct Urna *urna, char eleitor[]) {
   leSerial(resposta, 2);
 
   // Votação para senador
-  recebeCandidato((char *)"Senador:", (char *)"US", eleitor, candidatoSenador, partidoSenador, urna);
+  recebeCandidato((char *)"Senador:", (char *)"US", eleitor, candidatoSenador, urna);
   // Votação para governador
-  recebeCandidato((char *)"Governador:", (char *)"UG", eleitor, candidatoGovernador, partidoGovernador, urna);
+  recebeCandidato((char *)"Governador:", (char *)"UG", eleitor, candidatoGovernador, urna);
   // Votação para presidente
-  recebeCandidato((char *)"Presidente:", (char *)"UP", eleitor, candidatoPresidente, partidoPresidente, urna);
+  recebeCandidato((char *)"Presidente:", (char *)"UP", eleitor, candidatoPresidente, urna);
 
   if (pUrna2->flagTimeoutVotacao) return;
 
   // Contabilização dos votos
-  contabilizaVoto(candidatoSenador, Senador, partidoSenador);
-  contabilizaVoto(candidatoGovernador, Governador, partidoGovernador);
-  contabilizaVoto(candidatoPresidente, Presidente, partidoPresidente);
+  contabilizaVoto(candidatoSenador, Senador);
+  contabilizaVoto(candidatoGovernador, Governador);
+  contabilizaVoto(candidatoPresidente, Presidente);
 
   mandaStringSerial((char *)"UC");
   leSerial(resposta, 2);
 
   somFimVotacao();
   PORTD &= ~(1 << DD3); // desliga o led
+  TCCR2B = 0x00;        // Para o timer 2
+
+  int votos = 0;
+  for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
+    votos += urna->candidatos[Senador][j].votos;
+  }
+  if (votos == 33) urna->estado = encerrado;
+
   urna->proximo = menu;
 }

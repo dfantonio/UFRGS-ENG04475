@@ -65,7 +65,7 @@ void geraRelatorio(struct Urna *urna) {
 
     for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
       if (urna->candidatos[i][j].votos) {
-        copia(compilado, urna->candidatos[i][j].nome, &index);
+        copia(compilado, urna->candidatos[i][j].codigo, &index);
         votos2string(votosString, urna->candidatos[i][j].votos);
         copia(compilado, (char *)" com ", &index);
         copia(compilado, votosString, &index);

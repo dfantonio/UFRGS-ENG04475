@@ -23,6 +23,7 @@ void setup(struct Urna *urna) {
 
   DDRD |= (1 << DD3); // Pino 3 da porta d é saída
   TIMSK2 = 0x01;      // Interrupção timer 2
+  TCCR2A = 0;
 
   setupDisplay();
   setupTeclado();
@@ -40,8 +41,7 @@ void defineEstadoInicial(struct Urna *urna) {
   for (int i = 0; i < N_CANDIDATO_LINHAS; i++) {
     for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
       urna->candidatos[i][j].votos = 0;
-      urna->candidatos[i][j].nome[0] = 0;
-      urna->candidatos[i][j].partido[0] = 0;
+      urna->candidatos[i][j].codigo[0] = 0;
     }
   }
 

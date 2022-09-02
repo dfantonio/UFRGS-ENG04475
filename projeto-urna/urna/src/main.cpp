@@ -15,9 +15,6 @@ ISR(TIMER1_OVF_vect) {
   if (++pUrna->tempo >= 86400) pUrna->tempo = 0;
   verificaHorario(pUrna);
 
-  // TODO: Modicação pra fazer o código contar mais rápido
-  pUrna->tempo += 30;
-
   TCNT1 = CONTADOR_TIM1_1S; // Recarrega o timer
   TIFR1 = 1;                // Limpa a flag de estouro
 };

@@ -23,8 +23,7 @@ enum Cargos {
 };
 
 struct Candidato {
-  char nome[30];
-  char partido[17];
+  char codigo[3];
   int votos;
 };
 
