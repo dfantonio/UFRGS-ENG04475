@@ -7,7 +7,7 @@
 // essa variável tem q ser declarada no começo, e não pode estar dentro
 // da função. caso sobre tempo, refatorar o código pra calcular o tamanho
 // necessário antes de enviar (assim podemos enviar letra por letra sem ter q alocar tudo de antemão)
-char compilado[500] = {0};
+char compilado[300] = {0};
 
 void populaCargos(char *str, int cargo) {
   switch (cargo) {

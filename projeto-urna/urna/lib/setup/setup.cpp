@@ -37,12 +37,17 @@ void defineEstadoInicial(struct Urna *urna) {
   urna->estado = operacional;
   urna->tempo = 0;
   urna->flagTimeoutVotacao = false;
+  urna->chaveCriptografia = 1;
 
   for (int i = 0; i < N_CANDIDATO_LINHAS; i++) {
     for (int j = 0; j < N_CANDIDATO_COLUNAS; j++) {
       urna->candidatos[i][j].votos = 0;
       urna->candidatos[i][j].codigo[0] = 0;
     }
+  }
+
+  for (uint8_t i = 0; i < N_ELEITORES; i++) {
+    urna->listaEleitores[i] = 0;
   }
 
   // Dados de teste:

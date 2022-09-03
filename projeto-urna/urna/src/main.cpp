@@ -9,24 +9,30 @@
 #include "teclado.h"
 #include "timers.h"
 
-struct Urna *pUrna;
+#include <stdio.h>
+#include <stdlib.h>
 
+char TEMP[3];
+struct Urna urna;
+
+// Fazer recepção serial assíncrona via interrupção
+// Pra não depender de receber a hora pra iniciar a urna. (colocar o status default como aguardando)
 ISR(TIMER1_OVF_vect) {
-  if (++pUrna->tempo >= 86400) pUrna->tempo = 0;
-  verificaHorario(pUrna);
+  if (++urna.tempo >= 86400) urna.tempo = 0;
+  verificaHorario(&urna);
 
   TCNT1 = CONTADOR_TIM1_1S; // Recarrega o timer
   TIFR1 = 1;                // Limpa a flag de estouro
 };
 
 int main(void) {
-  char TEMP[3];
-  struct Urna urna;
-  pUrna = &urna;
   setup(&urna);
 
   display((char *)"Aguardando...");
   urna.tempo = recebeHora();
+  mandaStringSerial((char *)"UH");
+
+  urna.tempo = (long)10 * 60 * 60;
 
   while (urna.proximo) {
     if (urna.flagTimeoutVotacao) {

@@ -5,6 +5,8 @@ typedef void funcaoDoEstado(struct Urna *);
 #define N_CANDIDATO_LINHAS  3
 #define N_CANDIDATO_COLUNAS 7
 
+#define N_ELEITORES 33
+
 enum Estados {
   operacional,
   bloqueado,
@@ -34,4 +36,6 @@ struct Urna {
   struct Eleitor eleitor;
   struct Candidato candidatos[N_CANDIDATO_LINHAS][N_CANDIDATO_COLUNAS]; // Linha: cargos, Coluna: candidatos
   bool flagTimeoutVotacao;
+  int chaveCriptografia;
+  int listaEleitores[33];
 };
