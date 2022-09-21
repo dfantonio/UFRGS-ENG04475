@@ -51,7 +51,7 @@ void charLCD(unsigned char caracter) {
   HAL_Delay(2);
 }
 
-void stringLCD(char *str) // Envia string para a função do LCD
+void stringLCD(const char *str) // Envia string para a função do LCD
 {
   int i;
   for (i = 0; str[i] != 0; i++) // Envia cada char da string
@@ -82,7 +82,7 @@ void setupDisplay() {
   // comandoLCD(0x80); // Cursor no início do LCD
 }
 
-void display(char texto[], int linha = 0) {
+void display(const char texto[], int linha = 0) {
   char limpa[] = "                ";
   if (linha == 0) {
     comandoLCD(0x80); // Cursor no início do LCD

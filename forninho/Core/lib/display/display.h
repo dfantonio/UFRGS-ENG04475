@@ -1,7 +1,7 @@
 // Arquivo com todas as funções relacionadas ao display LCD
 
 // Escreve no display
-void display(char texto[], int linha);
+void display(const char texto[], int linha = 0);
 
 // Configura o display
 void setupDisplay();

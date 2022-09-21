@@ -7,3 +7,6 @@
 *dist*
 *private*
 Drivers*
+forninho/startup_stm32f446xx.s
+forninho/Makefile
+forninho/STM32F446RETx_FLASH.ld

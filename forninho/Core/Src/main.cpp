@@ -22,7 +22,9 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "dados.h"
 #include "display.h"
+#include "estados.h"
 
 /* USER CODE END Includes */
 
@@ -63,7 +65,8 @@ void SystemClock_Config(void);
  */
 int main(void) {
   /* USER CODE BEGIN 1 */
-
+  struct Forno forno;
+  forno.proximo = menu;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -85,6 +88,8 @@ int main(void) {
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
+  setupDisplay();
+  display("Teste 123");
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -93,9 +98,7 @@ int main(void) {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_Delay(250);
-    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
-    setupDisplay();
+    forno.proximo(&forno);
   }
   /* USER CODE END 3 */
 }
