@@ -3,6 +3,7 @@
 #include "display.h"
 #include "main.h"
 #include "menu.h"
+#include "tempo.h"
 #include <stdio.h>
 
 void demoTrocaDeEstado(struct Forno *forno);
@@ -10,6 +11,7 @@ void defineTemperatura(struct Forno *forno);
 void defineTempo(struct Forno *forno);
 void menuReceitas(struct Forno *forno);
 void menu(struct Forno *forno);
+void exibeRelogio(struct Forno *forno);
 
 void demoTrocaDeEstado(struct Forno *forno) {
   bool botaoPlaca;
@@ -69,7 +71,7 @@ void defineTemperatura(struct Forno *forno) {
   while (1) {
     sprintf(temperaturaTexto, "%dºC", forno->temperaturaDesejada); // TODO: Testar se o º fica bonito no display
 
-    display("Temperatura:");
+    display("Tempo:");
     display(temperaturaTexto);
 
     botaoMais = leBotao(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
@@ -83,6 +85,59 @@ void defineTemperatura(struct Forno *forno) {
 }
 
 void defineTempo(struct Forno *forno) {
+  bool botaoMais = false, botaoMenos = false, botaoStart = false;
+  char tempoStr[10];
+
+  forno->tempoGrill = 60;
+  forno->contagemAtiva = true;
+
+  while (1) {
+    display("Tempo:");
+    formataTempo(tempoStr, forno->tempoFaltando);
+    display(tempoStr);
+
+    botaoMais = leBotao(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
+    botaoMenos = leBotao(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
+    botaoStart = leBotao(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+
+    if (botaoMais) forno->tempoFaltando += 1;
+    if (botaoMenos) forno->tempoFaltando -= 1;
+    if (botaoStart) forno->proximo = defineTempo;
+  }
+}
+
+void exibeRelogio(struct Forno *forno) {
+  char tempoStr[10];
+  bool botaoStart = false;
+  uint32_t tempoAtual, tempoUltimaAtualizacao;
+  uint32_t tempoBotaoPressionado, botaoUltimoEstado = false;
+
+  tempoAtual = HAL_GetTick();
+  tempoUltimaAtualizacao = HAL_GetTick();
+  tempoBotaoPressionado = HAL_GetTick();
+
+  while (1) {
+    tempoAtual = HAL_GetTick();
+    botaoStart = leBotao(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+
+    if (botaoStart && botaoUltimoEstado == false) {
+      botaoUltimoEstado = true;
+      tempoBotaoPressionado = tempoAtual;
+    }
+    if (!botaoStart && botaoUltimoEstado == true) {
+      botaoUltimoEstado = false;
+      if ((tempoAtual - tempoBotaoPressionado) > 3000) forno->proximo = menu;
+      else
+        forno->contagemAtiva = false;
+    }
+
+    if ((tempoAtual - tempoUltimaAtualizacao) > 500) { // Lógica pro display não ficar atualizando toda hora
+      tempoUltimaAtualizacao = tempoAtual;
+      display("tempo restante:");
+      formataTempo(tempoStr, forno->tempoFaltando);
+      display(tempoStr);
+    }
+  }
 }
 
 void menuReceitas(struct Forno *forno) {

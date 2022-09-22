@@ -8,4 +8,5 @@ struct Forno {
   int tempoGrill;
   int temperaturaDesejada;
   float temperaturaAtual;
+  bool contagemAtiva;
 };
