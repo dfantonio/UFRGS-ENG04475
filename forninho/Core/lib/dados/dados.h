@@ -6,4 +6,6 @@ struct Forno {
   funcaoDoEstado *proximo;
   int tempoFaltando;
   int tempoGrill;
+  int temperaturaDesejada;
+  float temperaturaAtual;
 };
