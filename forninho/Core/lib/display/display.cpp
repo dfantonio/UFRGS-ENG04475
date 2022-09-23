@@ -3,29 +3,37 @@
 #define RS PC0 // Define RS
 #define EN PC2 // Define Enable
 
+GPIO_PinState normalizaBit(int dado) {
+  return dado ? GPIO_PIN_SET : GPIO_PIN_RESET;
+}
+
 // Separa o comando na parte alta ou baixa
 void setaPinos(unsigned char comando, bool parteAlta) {
+  uint8_t temp = 0;
   if (parteAlta) {
-    // PORTB &= 0xf0;
-    // PORTB |= (comando >> 4);
+    temp = comando >> 4;
   } else {
-    // PORTB &= 0xf0;
-    // PORTB |= comando & 0xf;
+    temp = comando & 0xf;
   }
+
+  HAL_GPIO_WritePin(display_D4_GPIO_Port, display_D4_Pin, normalizaBit(temp & 0b0001));
+  HAL_GPIO_WritePin(display_D5_GPIO_Port, display_D5_Pin, normalizaBit(temp & 0b0010));
+  HAL_GPIO_WritePin(display_D6_GPIO_Port, display_D6_Pin, normalizaBit(temp & 0b0100));
+  HAL_GPIO_WritePin(display_D7_GPIO_Port, display_D7_Pin, normalizaBit(temp & 0b1000));
 }
 
 // D� um pulso no enable
 void pulsoEN() {
-  // PORTC |= (1 << EN);
-  HAL_Delay(1); // Antigamente era 200us. Testar se nÃƒÂ£o afetou nada
-  // PORTC &= ~(1 << EN);
+  HAL_GPIO_WritePin(display_EN_GPIO_Port, display_EN_Pin, GPIO_PIN_SET);
+  HAL_Delay(1); // Antigamente era 1us. Testar se n�o afetou nada
+  HAL_GPIO_WritePin(display_EN_GPIO_Port, display_EN_Pin, GPIO_PIN_RESET);
 }
 
 // Envia um comando ao display
 void comandoLCD(unsigned char comando) {
   setaPinos(comando, true);
 
-  // PORTC &= ~(1 << RS);
+  HAL_GPIO_WritePin(display_RS_GPIO_Port, display_RS_Pin, GPIO_PIN_RESET);
   pulsoEN();
 
   HAL_Delay(1); // Antigamente era 200us. Testar se n�o afetou nada
@@ -40,7 +48,7 @@ void comandoLCD(unsigned char comando) {
 void charLCD(unsigned char caracter) {
   setaPinos(caracter, true);
 
-  // PORTC |= (1 << RS);
+  HAL_GPIO_WritePin(display_RS_GPIO_Port, display_RS_Pin, GPIO_PIN_SET);
   pulsoEN();
 
   HAL_Delay(1); // Antigamente era 200us. Testar se n�o afetou nada
@@ -67,19 +75,21 @@ void limpaLCD() {
 
 void setupDisplay() {
   // Configura todas as coisas necess�rias pro display
-  // DDRC |= (1 << DD0) | (1 << DD1) | (1 << DD2);              // Porta C ÃƒÂ© saÃƒÂ­da
-  // DDRB |= (1 << DD0) | (1 << DD1) | (1 << DD2) | (1 << DD3); // Porta B ÃƒÂ© saÃƒÂ­da
+  HAL_Delay(10);
+  HAL_Delay(10);
 
-  // HAL_Delay(10);
-  // HAL_Delay(10);
+  HAL_GPIO_WritePin(display_EN_GPIO_Port, display_EN_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(display_RS_GPIO_Port, display_RS_Pin, GPIO_PIN_RESET);
 
-  // comandoLCD(0x33); // Inicializa o display no modo de 4 bits
-  // comandoLCD(0x32); // Inicializa o display no modo de 4 bits
-  // comandoLCD(0x28); // 2 linhas e 4 bits
-  // comandoLCD(0x0C); // Display ligado sem cursor
-  // comandoLCD(0x06); // Incrementa cursor
-  // comandoLCD(0x01); // Limpa display
-  // comandoLCD(0x80); // Cursor no in�cio do LCD
+  comandoLCD(0xf0); // TESTE
+
+  comandoLCD(0x33); // Inicializa o display no modo de 4 bits
+  comandoLCD(0x32); // Inicializa o display no modo de 4 bits
+  comandoLCD(0x28); // 2 linhas e 4 bits
+  comandoLCD(0x0C); // Display ligado sem cursor
+  comandoLCD(0x06); // Incrementa cursor
+  comandoLCD(0x01); // Limpa display
+  comandoLCD(0x80); // Cursor no in�cio do LCD
 }
 
 void display(const char texto[], int linha = 0) {
