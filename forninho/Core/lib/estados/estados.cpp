@@ -13,39 +13,13 @@ void menuReceitas(struct Forno *forno);
 void menu(struct Forno *forno);
 void exibeRelogio(struct Forno *forno);
 
-void demoTrocaDeEstado(struct Forno *forno) {
-  bool botaoPlaca;
-  while (1) {
-    botaoPlaca = HAL_GPIO_ReadPin(botao_placa_GPIO_Port, botao_placa_Pin);
-    if (!botaoPlaca) {
-      forno->proximo = menu; // Esse botão é normalmente fechado, por isso o !
-      return;
-    }
-    HAL_Delay(100);
-    HAL_GPIO_TogglePin(led_verde_GPIO_Port, led_verde_Pin);
-  }
-}
-
 void menu(struct Forno *forno) {
-  bool botaoPlaca;
-
-  while (1) {
-    botaoPlaca = HAL_GPIO_ReadPin(botao_placa_GPIO_Port, botao_placa_Pin);
-    if (!botaoPlaca) {
-      forno->proximo = demoTrocaDeEstado; // Esse botão é normalmente fechado, por isso o !
-      return;
-    }
-    HAL_Delay(250);
-    HAL_GPIO_TogglePin(led_verde_GPIO_Port, led_verde_Pin);
-  }
-
-  // Código de verdade:
   bool botaoMais = false, botaoMenos = false, botaoFuncao = false;
 
   while (1) {
-    botaoMais = leBotao(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
-    botaoMenos = leBotao(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
-    botaoFuncao = leBotao(botao_menu_funcao_GPIO_Port, botao_menu_funcao_Pin);
+    botaoMais = leBotaoInstantaneo(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
+    botaoMenos = leBotaoInstantaneo(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
+    botaoFuncao = leBotaoInstantaneo(botao_menu_funcao_GPIO_Port, botao_menu_funcao_Pin);
 
     if (botaoMais || botaoMenos) {
       forno->proximo = defineTemperatura;
@@ -66,43 +40,65 @@ void menu(struct Forno *forno) {
  */
 void defineTemperatura(struct Forno *forno) {
   bool botaoMais = false, botaoMenos = false, botaoStart = false;
+  uint32_t tempoAtual, tempoUltimaAtualizacao = 0;
   char temperaturaTexto[10];
 
+  forno->temperaturaDesejada = 180;
+
   while (1) {
-    sprintf(temperaturaTexto, "%dºC", forno->temperaturaDesejada); // TODO: Testar se o º fica bonito no display
+    HAL_Delay(50); // TODO: Tirar esse delay e melhorar a lógica
+    tempoAtual = HAL_GetTick();
 
-    display("Tempo:");
-    display(temperaturaTexto);
+    if (passouIntervalo(&tempoUltimaAtualizacao, tempoAtual, 1000)) {
+      limpaLCD();
+      sprintf(temperaturaTexto, "%d C", forno->temperaturaDesejada);
+      display("Temperatura:");
+      display(temperaturaTexto, 1);
+    }
 
-    botaoMais = leBotao(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
-    botaoMenos = leBotao(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
-    botaoStart = leBotao(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+    botaoMais = leBotaoInstantaneo(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
+    botaoMenos = leBotaoInstantaneo(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
+    botaoStart = leBotaoInstantaneo(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
 
     if (botaoMais) forno->temperaturaDesejada += 1;
     if (botaoMenos) forno->temperaturaDesejada -= 1;
-    if (botaoStart) forno->proximo = defineTempo;
+    if (botaoStart) {
+      forno->proximo = defineTempo;
+      return;
+    }
   }
 }
 
 void defineTempo(struct Forno *forno) {
   bool botaoMais = false, botaoMenos = false, botaoStart = false;
+  uint32_t tempoAtual, tempoUltimaAtualizacao = 0;
   char tempoStr[10];
 
   forno->tempoGrill = 60;
+  forno->tempoFaltando = 10 * 60;
   forno->contagemAtiva = true;
 
   while (1) {
-    display("Tempo:");
-    formataTempo(tempoStr, forno->tempoFaltando);
-    display(tempoStr);
+    HAL_Delay(50); // TODO: Tirar esse delay e melhorar a lógica
+    tempoAtual = HAL_GetTick();
 
-    botaoMais = leBotao(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
-    botaoMenos = leBotao(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
-    botaoStart = leBotao(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+    if (passouIntervalo(&tempoUltimaAtualizacao, tempoAtual, 1000)) {
+      limpaLCD();
+      display("Tempo:");
+      formataTempo(tempoStr, forno->tempoFaltando);
+      display(tempoStr, 1);
+    }
 
-    if (botaoMais) forno->tempoFaltando += 1;
-    if (botaoMenos) forno->tempoFaltando -= 1;
-    if (botaoStart) forno->proximo = defineTempo;
+    botaoMais = leBotaoInstantaneo(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
+    botaoMenos = leBotaoInstantaneo(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
+    botaoStart = leBotaoInstantaneo(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+
+    if (botaoMais) forno->tempoFaltando += 60;
+    if (botaoMenos) forno->tempoFaltando -= 60;
+    if (botaoStart) {
+      forno->proximo = exibeRelogio;
+      return;
+    }
   }
 }
 
@@ -118,7 +114,7 @@ void exibeRelogio(struct Forno *forno) {
 
   while (1) {
     tempoAtual = HAL_GetTick();
-    botaoStart = leBotao(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+    botaoStart = leBotaoInstantaneo(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
 
     if (botaoStart && botaoUltimoEstado == false) {
       botaoUltimoEstado = true;
@@ -131,11 +127,11 @@ void exibeRelogio(struct Forno *forno) {
         forno->contagemAtiva = false;
     }
 
-    if ((tempoAtual - tempoUltimaAtualizacao) > 500) { // Lógica pro display não ficar atualizando toda hora
-      tempoUltimaAtualizacao = tempoAtual;
+    if (passouIntervalo(&tempoUltimaAtualizacao, tempoAtual, 1000)) { // Lógica pro display não ficar atualizando toda hora
+      limpaLCD();
       display("tempo restante:");
       formataTempo(tempoStr, forno->tempoFaltando);
-      display(tempoStr);
+      display(tempoStr, 1);
     }
   }
 }

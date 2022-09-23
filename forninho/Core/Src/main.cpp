@@ -89,7 +89,7 @@ int main(void) {
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
   setupDisplay();
-  display("Teste 123");
+  display("Menu");
   /* USER CODE END 2 */
 
   /* Infinite loop */
