@@ -1,5 +1,9 @@
 #include "main.h"
 
+bool leBotaoInstantaneo(GPIO_TypeDef *GPIOx, uint16_t Pino) {
+  return HAL_GPIO_ReadPin(GPIOx, Pino);
+}
+
 bool leBotao(GPIO_TypeDef *GPIOx, uint16_t Pino) {
   bool estadoAnterior, estadoAtual;
   uint32_t tempoAnterior, tempoAtual;
