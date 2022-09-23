@@ -59,13 +59,17 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define botao_placa_Pin GPIO_PIN_13
 #define botao_placa_GPIO_Port GPIOC
-#define led_verde_Pin GPIO_PIN_5
-#define led_verde_GPIO_Port GPIOA
-#define led_forno_Pin GPIO_PIN_6
-#define led_forno_GPIO_Port GPIOA
-#define led_grill_Pin GPIO_PIN_7
-#define led_grill_GPIO_Port GPIOA
-#define botao_menu_funcao_Pin GPIO_PIN_12
+#define display_D7_Pin GPIO_PIN_5
+#define display_D7_GPIO_Port GPIOA
+#define display_D6_Pin GPIO_PIN_6
+#define display_D6_GPIO_Port GPIOA
+#define display_D5_Pin GPIO_PIN_7
+#define display_D5_GPIO_Port GPIOA
+#define led_grill_Pin GPIO_PIN_4
+#define led_grill_GPIO_Port GPIOC
+#define led_forno_Pin GPIO_PIN_5
+#define led_forno_GPIO_Port GPIOC
+#define botao_menu_funcao_Pin GPIO_PIN_1
 #define botao_menu_funcao_GPIO_Port GPIOB
 #define botao_menu_mais_Pin GPIO_PIN_13
 #define botao_menu_mais_GPIO_Port GPIOB
@@ -73,18 +77,12 @@ void Error_Handler(void);
 #define botao_menu_menos_GPIO_Port GPIOB
 #define botao_menu_start_Pin GPIO_PIN_15
 #define botao_menu_start_GPIO_Port GPIOB
-#define display_EN_Pin GPIO_PIN_6
-#define display_EN_GPIO_Port GPIOC
 #define display_RS_Pin GPIO_PIN_7
 #define display_RS_GPIO_Port GPIOC
-#define display_D0_Pin GPIO_PIN_8
-#define display_D0_GPIO_Port GPIOC
-#define display_D1_Pin GPIO_PIN_9
-#define display_D1_GPIO_Port GPIOC
-#define display_D2_Pin GPIO_PIN_8
-#define display_D2_GPIO_Port GPIOA
-#define display_D3_Pin GPIO_PIN_9
-#define display_D3_GPIO_Port GPIOA
+#define display_D4_Pin GPIO_PIN_6
+#define display_D4_GPIO_Port GPIOB
+#define display_EN_Pin GPIO_PIN_8
+#define display_EN_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
