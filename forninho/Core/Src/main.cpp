@@ -50,7 +50,7 @@ uint32_t tensaoDiodo;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+struct Forno forno;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,7 +71,6 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  struct Forno forno;
   forno.proximo = menu;
   /* USER CODE END 1 */
 
@@ -98,8 +97,6 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
-  setupDisplay();
-  display("Menu");
   HAL_ADC_Start_DMA(&hadc1, &tensaoDiodo, 1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
@@ -163,7 +160,9 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   // Check which version of the timer triggered this callback and toggle LED
   if (htim == &htim3)
   {
-    //HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+    if (forno.contagemAtiva == true)
+      forno.tempoFaltando -= 60;
   }
 }
 /* USER CODE END 4 */
