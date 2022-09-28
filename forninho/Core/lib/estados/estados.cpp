@@ -107,7 +107,7 @@ void defineTempo(struct Forno *forno)
 
     botaoMais = leBotaoInstantaneo(botao_menu_mais_GPIO_Port, botao_menu_mais_Pin);
     botaoMenos = leBotaoInstantaneo(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
-    botaoStart = leBotaoInstantaneo(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
+    botaoStart = leBotaoSoltando(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
 
     if (botaoMais)
       forno->tempoFaltando += 60;
@@ -146,14 +146,14 @@ void exibeRelogio(struct Forno *forno)
     if (!botaoStart && botaoUltimoEstado == true)
     {
       botaoUltimoEstado = false;
+      forno->contagemAtiva = !(forno->contagemAtiva);
       if ((tempoAtual - tempoBotaoPressionado) > 3000)
       {
         forno->proximo = menu;
-        forno->contagemAtiva = false;
         return;
       }
     }
-    if (forno->tempoFaltando < 0) // se o tempo acabar
+    if (forno->tempoFaltando <= 0) // se o tempo acabar
     {
       forno->proximo = menu; // volta para o menu
       forno->contagemAtiva = false;
@@ -199,10 +199,10 @@ void menuReceitas(struct Forno *forno)
 void configuraReceita(struct Forno *forno)
 {
   int tempoReceitas[4][3] = {
-      {60 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 1
-      {60 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 2
-      {60 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 3
-      {60 * 2 + 10 * 60, 3600 * 1 + 10 * 60, 3600 * 1 + 40 * 60} // grill
+      {3600 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 1
+      {3600 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 2
+      {3600 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 3
+      {3600 * 2 + 10 * 60, 3600 * 1 + 10 * 60, 3600 * 1 + 40 * 60} // grill
   };
   forno->tempoFaltando = tempoReceitas[forno->estagioReceita][forno->receita];
   forno->proximo = exibeRelogio;
