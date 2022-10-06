@@ -28,8 +28,9 @@
 #include "dados.h"
 #include "display.h"
 #include "estados.h"
-
-uint32_t tensaoDiodo;
+#include "controlador.h"
+#include "cozinha.h"
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -71,6 +72,8 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  char tensao[16] = "teste";
+  uint32_t teste1 = 0, teste2 = 0;
   forno.proximo = menu;
   /* USER CODE END 1 */
 
@@ -96,19 +99,43 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADC_Start_DMA(&hadc1, &tensaoDiodo, 1);
+  HAL_ADC_Start_DMA(&hadc1, &forno.temperaturaAtual, 1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
+  setupDisplay();
+  HAL_TIM_Base_Start(&htim9);
+  TIM2->CCR1 = 9000;
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // HAL_Delay(30);
+    // controleTemperatura(&forno);
+    // if (teste1 == 0)
+    //   teste1 = HAL_GetTick();
+    // teste2 = HAL_GetTick();
+    // if (teste2 - teste1 > 2000)
+    // {
+    //   limpaLCD();
+    //   sprintf(tensao, "u = %d", forno.sinalControle);
+    //   display(tensao);
+    //   sprintf(tensao, "temp = %d", forno.temperaturaAtual);
+    //   display(tensao, 1);
+    //   teste1 = 0;
+    //   teste2 = 0;
+    // }
+    // sprintf(tensao, "%d", forno.temperaturaAtual);
+    // limpaLCD();
+    // display(tensao);
+
     forno.proximo(&forno);
   }
   /* USER CODE END 3 */
@@ -162,8 +189,16 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     if (forno.contagemAtiva == true)
+    {
       forno.tempoFaltando -= 60;
+    }
+    else if (forno.estagioReceita != 0)
+    {
+      configuraReceita(&forno);
+    }
   }
+  if (htim == &htim9 && forno.contagemAtiva)
+    controleTemperatura(&forno);
 }
 /* USER CODE END 4 */
 
