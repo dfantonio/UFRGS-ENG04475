@@ -1,10 +1,13 @@
 #include "dados.h"
 #include "estados.h"
 #include "display.h"
+#include "main.h"
+#include "stdio.h"
 
 void configuraReceita(struct Forno *forno)
 {
     int tempoReceitas[3][3] = {
+        // fim de cada etapa
         {3600 * 1, 3600 * 2, 3600 * 2},           // etapa de cozimento 1
         {3600 * 3, 3600 * 3, 3600 * 3 + 30 * 60}, // etapa de cozimento 2
         {3600 * 4, 3600 * 0, 3600 * 0},           // etapa de cozimento 3
@@ -23,15 +26,33 @@ void configuraReceita(struct Forno *forno)
     if (forno->estagioReceita == 0)
     {
         forno->tempoFaltando = tempoTotal[forno->receita];
+        forno->temperaturaDesejada = temperaturas[forno->estagioReceita][forno->receita];
         forno->estagioReceita = 1;
     }
-    if ((tempoTotal[forno->receita] - forno->tempoFaltando) > tempoReceitas[forno->estagioReceita][forno->receita])
+
+    if (forno->tempoFaltando == tempoGrill[forno->receita])
     {
-        forno->estagioReceita += 1;
-        if (forno->estagioReceita > 3)
+        // Liga Led Grill
+        HAL_GPIO_WritePin(led_grill_GPIO_Port, led_grill_Pin, GPIO_PIN_SET);
+    }
+    if (forno->tempoFaltando == 0)
+    {
+        // Desliga Led Grill
+        HAL_GPIO_WritePin(led_grill_GPIO_Port, led_grill_Pin, GPIO_PIN_RESET);
+    }
+
+    if ((tempoTotal[forno->receita] - forno->tempoFaltando) >= tempoReceitas[forno->estagioReceita - 1][forno->receita])
+    {
+        if (forno->estagioReceita < 3)
         {
-            forno->proximo = menu;
+            forno->temperaturaDesejada = temperaturas[forno->estagioReceita][forno->receita];
+            forno->estagioReceita += 1;
+            return;
+        }
+        else
+        {
             forno->estagioReceita = 0;
+            return;
         }
     }
     return;

@@ -106,7 +106,7 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim3);
   setupDisplay();
   HAL_TIM_Base_Start(&htim9);
-  TIM2->CCR1 = 9000;
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -118,6 +118,7 @@ int main(void)
 
     /* USER CODE BEGIN 3 */
     // HAL_Delay(30);
+    // forno.temperaturaDesejada = 50;
     // controleTemperatura(&forno);
     // if (teste1 == 0)
     //   teste1 = HAL_GetTick();
@@ -127,14 +128,11 @@ int main(void)
     //   limpaLCD();
     //   sprintf(tensao, "u = %d", forno.sinalControle);
     //   display(tensao);
-    //   sprintf(tensao, "temp = %d", forno.temperaturaAtual);
+    //   sprintf(tensao, "temp = %d", (forno.temperaturaAtual * 3300 / 4095));
     //   display(tensao, 1);
     //   teste1 = 0;
     //   teste2 = 0;
     // }
-    // sprintf(tensao, "%d", forno.temperaturaAtual);
-    // limpaLCD();
-    // display(tensao);
 
     forno.proximo(&forno);
   }
@@ -191,14 +189,26 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     if (forno.contagemAtiva == true)
     {
       forno.tempoFaltando -= 60;
+      HAL_GPIO_WritePin(led_forno_GPIO_Port, led_forno_Pin, GPIO_PIN_SET);
     }
-    else if (forno.estagioReceita != 0)
+    else
+      HAL_GPIO_WritePin(led_forno_GPIO_Port, led_forno_Pin, GPIO_PIN_RESET);
+    if (forno.estagioReceita != 0)
     {
       configuraReceita(&forno);
     }
   }
-  if (htim == &htim9 && forno.contagemAtiva)
-    controleTemperatura(&forno);
+  if (htim == &htim9)
+  {
+    if (forno.contagemAtiva == true)
+    {
+      controleTemperatura(&forno);
+    }
+    if (forno.contagemAtiva == false)
+    {
+      TIM2->CCR1 = 0;
+    }
+  }
 }
 /* USER CODE END 4 */
 
