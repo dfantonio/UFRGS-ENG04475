@@ -28,8 +28,9 @@
 #include "dados.h"
 #include "display.h"
 #include "estados.h"
-
-uint32_t tensaoDiodo;
+#include "controlador.h"
+#include "cozinha.h"
+#include <stdio.h>
 
 /* USER CODE END Includes */
 
@@ -65,12 +66,14 @@ void SystemClock_Config(void);
 /* USER CODE END 0 */
 
 /**
- * @brief  The application entry point.
- * @retval int
- */
+  * @brief  The application entry point.
+  * @retval int
+  */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
+  char tensao[16] = "teste";
+  uint32_t teste1 = 0, teste2 = 0;
   forno.proximo = menu;
   /* USER CODE END 1 */
 
@@ -96,41 +99,63 @@ int main(void)
   MX_ADC1_Init();
   MX_TIM2_Init();
   MX_TIM3_Init();
+  MX_TIM9_Init();
   /* USER CODE BEGIN 2 */
-  HAL_ADC_Start_DMA(&hadc1, &tensaoDiodo, 1);
+  HAL_ADC_Start_DMA(&hadc1, &forno.temperaturaAtual, 1);
   HAL_TIM_PWM_Start(&htim2, TIM_CHANNEL_1);
   HAL_TIM_Base_Start_IT(&htim3);
+  setupDisplay();
+  HAL_TIM_Base_Start_IT(&htim9);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
   while (1)
   {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+    // HAL_Delay(30);
+    // forno.temperaturaDesejada = 50;
+    // controleTemperatura(&forno);
+    // if (teste1 == 0)
+    //   teste1 = HAL_GetTick();
+    // teste2 = HAL_GetTick();
+    // if (teste2 - teste1 > 2000)
+    // {
+    //   limpaLCD();
+    //   sprintf(tensao, "u = %d", forno.sinalControle);
+    //   display(tensao);
+    //   sprintf(tensao, "temp = %d", (forno.temperaturaAtual * 3300 / 4095));
+    //   display(tensao, 1);
+    //   teste1 = 0;
+    //   teste2 = 0;
+    // }
+
     forno.proximo(&forno);
   }
   /* USER CODE END 3 */
 }
 
 /**
- * @brief System Clock Configuration
- * @retval None
- */
+  * @brief System Clock Configuration
+  * @retval None
+  */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-   */
+  */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE3);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-   * in the RCC_OscInitTypeDef structure.
-   */
+  * in the RCC_OscInitTypeDef structure.
+  */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -141,8 +166,9 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-   */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -162,15 +188,35 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   {
     // HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     if (forno.contagemAtiva == true)
+    {
       forno.tempoFaltando -= 60;
+      HAL_GPIO_WritePin(led_forno_GPIO_Port, led_forno_Pin, GPIO_PIN_SET);
+    }
+    else
+      HAL_GPIO_WritePin(led_forno_GPIO_Port, led_forno_Pin, GPIO_PIN_RESET);
+    if (forno.estagioReceita != 0)
+    {
+      configuraReceita(&forno);
+    }
+  }
+  if (htim == &htim9)
+  {
+    if (forno.contagemAtiva == true)
+    {
+      controleTemperatura(&forno);
+    }
+    if (forno.contagemAtiva == false)
+    {
+      TIM2->CCR1 = 0;
+    }
   }
 }
 /* USER CODE END 4 */
 
 /**
- * @brief  This function is executed in case of error occurrence.
- * @retval None
- */
+  * @brief  This function is executed in case of error occurrence.
+  * @retval None
+  */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -182,14 +228,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
- * @brief  Reports the name of the source file and the source line number
- *         where the assert_param error has occurred.
- * @param  file: pointer to the source file name
- * @param  line: assert_param error line source number
- * @retval None
- */
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */

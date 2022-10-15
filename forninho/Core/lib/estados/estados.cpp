@@ -157,21 +157,13 @@ void exibeRelogio(struct Forno *forno)
     {
       forno->proximo = menu; // volta para o menu
       forno->contagemAtiva = false;
-      if (forno->estagioReceita == 0 || forno->estagioReceita == 4)
+      limpaLCD();
+      display("CONCLUIDO");
+      while (1)
       {
-        limpaLCD();
-        display("CONCLUIDO");
-        while (1)
-        {
-          if (leBotaoSoltando(botao_menu_start_GPIO_Port, botao_menu_start_Pin))
-            return;
-        }
+        if (leBotaoSoltando(botao_menu_start_GPIO_Port, botao_menu_start_Pin))
+          return;
       }
-      if (forno->estagioReceita != 0) // volta para a receita se não for cozimento normal
-      {
-        forno->proximo = configuraReceita;
-      }
-      return;
     }
     if (passouIntervalo(&tempoUltimaAtualizacao, tempoAtual, 1000))
     { // Lógica pro display não ficar atualizando toda hora
@@ -192,25 +184,7 @@ void menuReceitas(struct Forno *forno)
 
   int resultado = exibeMenu(receitas);
   forno->receita = resultado;
-  forno->proximo = configuraReceita;
-  return;
-}
-
-void configuraReceita(struct Forno *forno)
-{
-  int tempoReceitas[4][3] = {
-      {3600 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 1
-      {3600 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 2
-      {3600 * 4, 3600 * 3, 3600 * 3 + 30 * 60},                    // etapa de cozimento 3
-      {3600 * 2 + 10 * 60, 3600 * 1 + 10 * 60, 3600 * 1 + 40 * 60} // grill
-  };
-  forno->tempoFaltando = tempoReceitas[forno->estagioReceita][forno->receita];
+  configuraReceita(forno);
   forno->proximo = exibeRelogio;
-  forno->estagioReceita += 1;
-  if (forno->estagioReceita > 4)
-  {
-    forno->proximo = menu;
-    forno->estagioReceita = 0;
-  }
   return;
 }

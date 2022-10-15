@@ -22,6 +22,7 @@ int exibeMenu(char itens[3][20])
       botaoMenos = leBotaoSoltando(botao_menu_menos_GPIO_Port, botao_menu_menos_Pin);
       botaoStart = leBotaoSoltando(botao_menu_start_GPIO_Port, botao_menu_start_Pin);
     } while (botaoMais == false && botaoMenos == false && botaoStart == false);
+    HAL_Delay(100);
     if (botaoStart)
       return i;
     if (botaoMais)
